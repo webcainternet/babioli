@@ -1,0 +1,43 @@
+<?php
+$_['lang_page_title']               = 'Listagem em massa';
+
+$_['lang_cancel']                   = 'Cancelar';
+$_['lang_none']                     = 'Nenhum';
+$_['lang_preview']                  = 'Pre-visualizar';
+$_['lang_pixels']                   = 'Pixels';
+$_['lang_yes']                      = 'Sim';
+$_['lang_no']                       = 'Não';
+$_['lang_add']                      = 'Adicionar';
+$_['lang_remove']                   = 'Remover';
+$_['lang_save']                     = 'Salvar';
+$_['lang_other']                    = 'Outro';
+$_['lang_select']                   = 'Selecionar';
+
+$_['lang_profile_theme']            = 'Tema do perfil:';
+$_['lang_profile_shipping']         = 'Perfil do transporte:';
+$_['lang_profile_returns']          = 'Perfil de devolução:';
+$_['lang_profile_generic']          = 'Perfil genérico:';
+$_['lang_condition']                = 'Condition:';
+$_['lang_duration']                 = 'Duração:';
+$_['lang_category']                 = 'Categoria:';
+$_['lang_preview_all']              = 'Verificar tudo';
+$_['lang_error_variants']           = 'Itens com variações não podem ser listados em massa, por isso foram desselecionados';
+$_['lang_error_stock']              = 'Alguns itens estão sem estoque e foram removidos';
+$_['lang_exists']                   = 'Alguns itens já estão listados no eBay, por isso foram removidos';
+$_['lang_error_count']              = 'Você selecionou %s itens, pode levar um tempo para processar os dados';
+$_['lang_error_ship_profile']       = 'Você precisa ter um perfil padrão de transporte';
+$_['lang_error_generic_profile']    = 'Você precisa ter um perfil padrão genérico';
+$_['lang_error_return_profile']     = 'Você precisa ter um perfil padrão de devolução';
+$_['lang_error_theme_profile']      = 'Você precisa ter um perfil tema padrão';
+$_['lang_verifying']                = 'Verificando itens';
+$_['lang_processing']               = 'Processando <span id="activeItems"></span> itens';
+$_['lang_listed']                   = 'Itens listados! ID: ';
+$_['lang_view']                     = 'Ver lsitagem';
+$_['lang_error_no_product']         = 'Não há produtos elegíveis selecionado para utilizar o recurso de envio em massa';
+$_['lang_ajax_confirm_listing']     = 'Tem certeza que quer listar estes itens em massa?';
+$_['lang_bulk_plan_error']          = 'Seu plano atual não permite envios em massa. Adquira um plano melhor <a href="%s">neste link</a>';
+$_['lang_item_limit']               = 'Você não pode listar estes itens pois isso excede seu plano. Adquira um plano melhor <a href="%s">neste link</a>';
+$_['lang_search_text']              = 'Insira algum texto de busca';
+$_['lang_catalog_no_products']      = 'Nenhum item de catálogo foi encontrado';
+$_['lang_search_failed']            = 'A busca falhou';
+$_['lang_esc_key']                  = 'A página inicial foi ocultada, mas o carregamento pode não ter sido concluido ainda';

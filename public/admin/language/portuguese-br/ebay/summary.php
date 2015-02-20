@@ -1,0 +1,23 @@
+<?php
+$_['lang_heading']              = 'eBay summary';
+$_['lang_openbay']              = 'OpenBay Pro';
+$_['lang_ebay']                 = 'eBay';
+$_['lang_btn_return']           = 'Retorno';
+$_['lang_use_desc']             = 'Esta é sua página de resumo da conta eBay. É um instantâneo de qualquer limite em sua conta ao longo de sua performance de vendas DSR.';
+$_['lang_load']                 = 'Atualizar';
+$_['lang_limits_heading']       = 'Limites de venda';
+$_['lang_error_validation']     = 'Você precisa registrar-se para seu API Token e habilitar o módulo.';
+$_['lang_ajax_load_error']      = 'Desculpe, a conexão com o servidor falhou';
+$_['lang_ebay_limit_head']      = 'Sua conta no eBay tem limites de venda!';
+$_['lang_ebay_limit_t1']        = 'Você pode vender';
+$_['lang_ebay_limit_t2']        = 'mais itens (esta é a quantidade total de itens, e não listagens individuais) para o valor de';
+$_['lang_ebay_limit_t3']        = 'Quando você tenta criar novas lsitas, irá falhar se você exceder a quantidade acima.';
+$_['lang_as_described']         = 'Item como descrito';
+$_['lang_communication']        = 'Comunicação';
+$_['lang_shippingtime']         = 'Tempo de envio';
+$_['lang_shipping_charge']      = 'Tarifas de remessa';
+$_['lang_score']                = 'Pontuação';
+$_['lang_count']                = 'Contagem';
+$_['lang_report_30']            = '30 dias';
+$_['lang_report_52']            = '52 semanas';
+$_['lang_title_dsr']            = 'Relatórios DSR';

@@ -1,0 +1,23 @@
+<?php
+$_['lang_heading']                      = 'Importação de item';
+$_['lang_openbay']                      = 'OpenBay Pro';
+$_['lang_page_title']                   = 'OpenBay Pro para eBay';
+$_['lang_ebay']                         = 'eBay';
+$_['lang_btn_return']                   = 'Retornar';
+$_['lang_sync_import_line1']            = '<strong>Cuidado!</strong> Isto vai importar todos os seus produtos eBay e construir uma estrutura de categoria em sua loja. É aconselhável que você delete todas as categorias e produtos antes de iniciar esta opção. <br />A estrutura de categoria vem a partir da estrutura normal de categorias do eBay, e não das categorias de sua loja (se você tiver uma loja eBay). Você pode renomear, remover e editar as categorias importadas sem afetar seus produtos eBay.';
+$_['lang_sync_import_line2']            = 'Esta opção usa várias chamadas para a API, uma para cada produto e mais uma chamada extra para cada 20 itens.';
+$_['lang_sync_import_line3']            = 'Você precisa garantir que seu servidor pode aceitar e processar numerosos tamanhos de posts de dados. 1000 itens eBay são cerca de 40Mb em tamanho, e você precisará calcular sua necessidade com relação ao que seu servidor suporta. Se sua chamada falhar então é como se suas configurações fossem muito baixas. Seu limite de memória PHP deve estar em torno de 128Mb.';
+$_['lang_sync_server_size']             = 'Atualmente seu servidor pode aceitar: ';
+$_['lang_sync_memory_size']             = 'Seu limite de memória PHP: ';
+$_['lang_sync_item_description']        = 'Descrição de itens importados<span class="help">Isso importará tudo<br />incluindo HTML, counters etc</span>';
+$_['lang_sync_notes_location']          = 'Importar anotações eBay para os dados locais';
+$_['lang_import_ebay_items']            = 'Importar itens eBay';
+$_['lang_import']                       = 'Importar';
+$_['lang_error_validation']             = 'Você precisa registrar para seu Token API e habilitar o módulo.';
+$_['lang_ajax_import_confirm']          = 'Isso importará todos os seus itens eBay como novos produtos, você tem certeza? Isso NÃO PODERÁ se desfeito depois! Faça um backup antes de prosseguir!';
+$_['lang_ajax_import_notify']           = 'Sua requisição de importação está sendo processada; Uma importação leva cerca de 1 hora por 1000 itens.';
+$_['lang_ajax_load_error']              = 'Não foi possível conectar-se ao servidor';
+$_['lang_maintenance_fail']             = 'Sua loja está em modo de manutenção. A importação não funcionará!';
+$_['lang_import_images_msg1']           = 'existem imagens pendentes de importação/cópia do eBay. Recarregue a página. Se o número não baixar então';
+$_['lang_import_images_msg2']           = 'clique aqui';
+$_['lang_import_images_msg3']           = 'e aguarde. Mais informações sobre o por quê isso aconteceu podem ser encontradas <a href="http://shop.openbaypro.com/index.php?route=information/faq&topic=8_45" target="_blank">aqui</a>';

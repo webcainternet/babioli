@@ -1,0 +1,32 @@
+<?php
+$_['lang_title']                    = 'OpenBay Pro';
+$_['lang_page_title']               = 'Revisar listagem eBay';
+$_['lang_home']                     = 'Home';
+$_['lang_save']                     = 'Salvar';
+$_['lang_ebay']                     = 'eBay';
+$_['lang_pageaction']               = 'Revisar listagem';
+$_['lang_view']                     = 'Visualizar listagem';
+$_['lang_remove']                   = 'Remover link';
+$_['lang_end']                      = 'Listagem final';
+$_['lang_cancel']                   = 'Cancelar';
+$_['lang_loading']                  = 'Obter informação de item a partir do eBay';
+$_['lang_retry']                    = 'Tentar novamente';
+$_['lang_error_loading']            = 'Houve um erro ao tentar obter informações do eBay';
+$_['lang_saved']                    = 'A listagem foi salva';
+$_['lang_tbl_title']                = 'Título';
+$_['lang_tbl_price']                = 'Preço<span class="help">inclui taxa</span>';
+$_['lang_tbl_qty_instock']          = 'Nível do estoque local<span class="help">Este é o nível de estoque no OpenCart</span>';
+$_['lang_tbl_qty_listed']           = 'Quantidade no eBay<span class="help">Este é o nível atual de estoque no eBay</span>';
+$_['lang_tbl_qty_reserve']          = 'Nível reserva<span class="help">Este é o nível máximo de estoque no eBay (0 = sem limite de reserva)</span>';
+$_['lang_alert_removed']            = 'A listagem foi desvinculada';
+$_['lang_alert_ended']              = 'A listagem foi finalizada no eBay';
+$_['lang_confirm']                  = 'Você tem certeza?';
+
+$_['lang_stock_matrix']             = 'Matriz de estoque';
+$_['lang_stock_col_qty_total']      = 'Em estoque';
+$_['lang_stock_col_qty']            = 'Para lista';
+$_['lang_stock_col_qty_reserve']    = 'Reservado';
+$_['lang_stock_col_comb']           = 'Combinação';
+$_['lang_stock_col_price']          = 'Preço';
+$_['lang_stock_col_enabled']        = 'Habilitado';
+$_['lang_qty']                      = 'Quantidade para lista<span class="help">Insira uma quantidade baixa se você quer manter um nível baixo de estoque no eBay</span>';
