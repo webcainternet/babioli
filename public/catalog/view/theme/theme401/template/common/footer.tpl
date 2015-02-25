@@ -8,7 +8,7 @@
 
 	<div class="container">
 		<div class="row" style="margin-bottom: 30px; margin-top: -20px;">
-			<div class="fb-like-box" data-href="https://www.facebook.com/lojavirtual.digital" data-width="1200" data-colorscheme="dark" data-show-faces="true" data-header="false" data-stream="false" data-show-border="false"></div>
+			<div class="fb-like-box" data-href="https://www.facebook.com/Babioli.Oficial" data-width="1200" data-colorscheme="dark" data-show-faces="true" data-header="false" data-stream="false" data-show-border="false"></div>
 		</div>
 	</div>
 
