@@ -1,12 +1,14 @@
 <?php
-
 // Text
-$_['text_home']           = 'Página Inicial';
-$_['text_wishlist']       = 'Lista de desejos (%s)';
-$_['text_shopping_cart']  = 'Carrinho de compras';
-$_['text_search']         = 'Digite aqui para buscar algum produto...';
-$_['text_welcome']        = 'Seja bem vindo, visitante! Você pode <a href="%s">entrar</a> ou <a href="%s">criar uma conta</a>.';
-$_['text_logged']         = 'Você está logado como <a href="%s">%s</a> <b>(</b> <a href="%s">Sair</a> <b>)</b>';
-$_['text_account']        = 'Minha conta';
-$_['text_checkout']       = 'Finalizar pedido';
+$_['text_home']          = 'Principal';
+$_['text_wishlist']      = 'Lista de Desejos (%s)';
+$_['text_shopping_cart'] = 'Meu Carrinho';
+$_['text_search']        = 'Busca';
+$_['text_welcome']       = 'Acesse sua <a href="%s">conta</a> ou <a href="%s">cadastre-se</a>.';
+$_['text_logged']        = 'Você acessou como <a href="%s">%s</a> <b>(</b> <a href="%s">Sair</a> <b>)</b>';
+$_['text_account']       = 'Minha Conta';
+$_['text_checkout']      = 'Finalizar Pedido';
+$_['text_category']      = 'Categorias';
+$_['text_latest_added']   = 'Últimos adicionado(s):';
+$_['text_items2']   = '%s';
 ?>

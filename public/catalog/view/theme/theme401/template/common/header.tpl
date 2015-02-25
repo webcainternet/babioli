@@ -116,6 +116,18 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
 });
 //--></script>
 <?php } ?>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/pt_BR/sdk.js#xfbml=1&appId=805023986191114&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
 <?php echo $google_analytics; ?>
 </head>
 <body class="<?php echo empty($this->request->get['route']) ? 'common-home' : str_replace('/', '-', $this->request->get['route']); ?>"><a id="hidden" href="<?php echo $base; ?>"></a>
@@ -131,9 +143,9 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
 			<li><a class="<?php if (isset($this->request->get['route']) && $this->request->get['route']=="checkout/cart") {echo "active";} ?>" href="<?php echo $shopping_cart; ?>"><i class="fa fa-shopping-cart"></i><?php echo $text_shopping_cart; ?></a></li>
 			<li><a class="<?php if (isset($this->request->get['route']) && $this->request->get['route']=="checkout/checkout") {echo "active";} ?>" href="<?php echo $checkout; ?>"><i class="fa fa-check"></i><?php echo $text_checkout; ?></a></li>
 			<?php if (!$logged) { ?>
-			<?php echo $text_welcome; ?>
+			<li><?php echo $text_welcome; ?></li>
 			<?php } else { ?>
-			<?php echo $text_logged; ?>
+			<li><?php echo $text_logged; ?></li>
 			<?php } ?>
 		</ul>
 		<?php echo $language; ?>
@@ -188,7 +200,9 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
 						<li><a class="<?php if (isset($this->request->get['route']) && $this->request->get['route']=="checkout/cart") {echo "active";} ?>" href="<?php echo $shopping_cart; ?>"><i class="fa fa-shopping-cart"></i><?php echo $text_shopping_cart; ?></a></li>
 						<li><a class="<?php if (isset($this->request->get['route']) && $this->request->get['route']=="checkout/checkout") {echo "active";} ?>" href="<?php echo $checkout; ?>"><i class="fa fa-check"></i><?php echo $text_checkout; ?></a></li>
 						<?php if (!$logged) { ?>
-								<?php echo $text_welcome; ?>
+								<?php //echo $text_welcome; ?>
+								<li><a href="%s">Entrar</a></li>
+								<li><a href="%s">Criar uma conta</a></li>
 								<?php } else { ?>
 								<?php echo $text_logged; ?>
 								<?php } ?>

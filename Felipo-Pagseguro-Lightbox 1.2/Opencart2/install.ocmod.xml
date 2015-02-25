@@ -1,0 +1,61 @@
+<modification>
+  <name><![CDATA[<font color="#00a99d"><b>Code Market - PagSeguro Lightbox com Segunda Via</b></font>]]></name>
+  <version>1.2</version>
+  <code>Code Market - PagSeguro Lightbox com Segunda Via</code>
+         <author><![CDATA[<font color="#00a99d"><b>Code Markert - codemarket.com.br</b></font>]]></author>
+    <link>http://www.codemarket.com.br</link>
+
+    <file path="catalog/view/theme/*/template/checkout/checkout.tpl">
+		<operation>
+			<search position="before">
+				<![CDATA[<?php echo $footer; ?>
+                ]]>
+			</search>
+			<add>
+				<![CDATA[
+				<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.lightbox.js"></script>
+				]]>
+			</add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/payment/pagseguro.tpl">
+		<operation>
+			<search position="replace">
+				<![CDATA[location = '<?php echo $url; ?>';
+                    ]]>
+			</search>
+			<add>
+				<![CDATA[
+                    PagSeguroLightbox({
+                     code: '<?php echo substr($url,59); ?>'
+                     }, {
+                     success : function(transactionCode) {
+                     	 location.href='index.php?route=checkout/success';
+                     },
+                     abort : function() {
+                     alert("Pagamento incompleto!, efetue o Pedido Novamente e conclua o Pagamento.");
+                     }
+                     });
+                    if (!PagSeguroLightbox){
+                     location.href='<?php echo $url; ?>';
+                    }
+				]]>
+			</add>
+		</operation>
+	</file>
+
+	<file path="catalog/language/*/payment/pagseguro.php">
+		<operation>
+			<search position="replace">
+				<![CDATA[$_['button_confirm_pagseguro'] 	= 'Confirmar e ir para o PagSeguro';
+                ]]>
+			</search>
+			<add>
+				<![CDATA[
+			$_['button_confirm_pagseguro'] 	= 'Confirmar e abrir o PagSeguro';
+				]]>
+			</add>
+		</operation>
+	</file>
+</modification>

@@ -1,0 +1,197 @@
+<modification>
+	<!--
+	Super Logo Payments and Shippings with Vqmod
+	Acrescenta Logos (imagens) aos modos de Pagamento e Tipo de envio, sem modificar a linguagem
+	Implementado modificações para os Pagamentos pelo Pagseguro e Transferência Bancária
+	E para os Envios pelo Correios (Sedex e Pac sem Contrato) e Frete Grátis
+	Além disso, foi modificado a textarea para 3 linhas e não 8
+
+	Solução fácil de ser modificada e implementada para novos meios de Pagamentos e Envio, basta manter a lógica usada nessa
+	modificação
+
+	Se tiver dúvidas sobre como implementar, pode me contatar pelo E-mail: felipo.antonoff@gmail.com, mas apenas para versões comerciais,
+	devido a falta de tempo
+	Soluções comerciais, contato felipo.antonoff@gmail.com
+	Meu site, usando Opencart 1.5.5.1 - fgame.com.br
+	
+	1.0.1 - Inserido Akatus com 3 Imagens
+	-->
+	<id>Code Market - Imagem Pagamento e Entrega no Checkout</id>
+	<version>1.0.1</version>
+	<vqmver>2.3.2</vqmver>
+	<author>Felipo Antonoff Araújo</author>
+
+	<!-- Pagamento -->
+	<!-- 	Imagem no Pagamento e Textarea com 3 linhas e não 8 (ocupa muito espaço)
+	Modificações nos Modelos de Pagamento para receber a imagem e na View, para mostrar no Checkout -->
+	<file name="catalog/model/payment/pagseguro.php">
+		<operation error="abort">
+			<!-- Adicionando a imagem no modelo pagseguro.php -->
+			<search position="after">
+				<![CDATA[
+				'title'      => $this->language->get('text_title'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/payment/pagseguro.jpg"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file name="catalog/model/payment/pagamento_digital.php">
+		<operation error="abort">
+			<!-- Adicionando a imagem no modelo pagamento_digital.php -->
+			<search position="after">
+				<![CDATA[
+				'title'      => $this->language->get('text_title'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/payment/bcash.jpg"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- Akatus -->
+	<file name="catalog/model/payment/akatus.php">
+		<operation error="abort">
+			<!-- Adicionando a imagem no modelo akatus.php -->
+			<search position="after">
+				<![CDATA[
+				'title'      => $this->language->get('text_title'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/payment/akatus.png"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- GerenciaNet -->
+	<file name="catalog/model/payment/gerencianet.php">
+		<operation error="abort">
+			<!-- Adicionando a imagem no modelo akatus.php -->
+			<search position="after">
+				<![CDATA[
+				'title'      => $this->language->get('text_title'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/payment/logoGerenciaNet.gif"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file name="catalog/model/payment/bank_transfer.php">
+		<operation error="abort">
+			<!-- Adicionando a imagem no modelo bank_transfer.php -->
+			<search position="after">
+				<![CDATA[
+				'title'      => $this->language->get('text_title'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/payment/banco.png"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file name="catalog/view/theme/*/template/checkout/payment_method.tpl">
+		<operation error="abort">
+			<!-- Acrescentando as imagens na View payment_method.tpl -->
+			<search position="replace">
+				<![CDATA[
+					$payment_method['title'];
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+						$payment_method['title']."<br>".$payment_method['img'];
+				]]>
+			</add>
+		</operation>
+		<operation error="abort">
+			<!-- Diminuindo o Textarea -->
+			<search position="replace">
+				<![CDATA[
+				<textarea name="comment" rows="8"
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				<textarea name="comment" rows="3"
+				]]>
+			</add>
+		</operation>
+	</file>
+
+	<!-- ENTREGA -->
+	<!-- 	Imagem no tipo de Entrega e Textarea com 3 linhas e não 8 (ocupa muito espaço)
+	Modificações nos Modelos de Entrega para receber a imagem e na View, para mostrar no Checkout -->
+	<file name="catalog/model/shipping/correios.php">
+		<operation error="abort">
+			<!-- Adicionando as imagens ao Modelo correios.php -->
+			<search position="after">
+				<![CDATA[
+				$this->quote_data[$codigo]['cost'] = $new_cost;
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				if($codigo == 41106)
+				$this->quote_data[$codigo]['img'] = '<img src="image/data/shipping/pac.jpg"/>';
+				else if($codigo == 40010) $this->quote_data[$codigo]['img'] = '<img src="image/data/shipping/sedex.jpg"/>';
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file name="catalog/model/shipping/free.php">
+		<operation error="abort">
+			<!-- Adicionando as imagens ao Modelo free.php -->
+			<search position="after">
+				<![CDATA[
+				'title'        => $this->language->get('text_description'),
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				'img'      => '<img src="image/data/shipping/fretegratis.png"/>',
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file name="catalog/view/theme/*/template/checkout/shipping_method.tpl">
+		<operation error="abort">
+			<!-- Acrescentando a imagem no View  shipping_method.tpl -->
+			<search position="replace">
+				<![CDATA[
+				$quote['title'];
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				$quote['title']."<br>".$quote['img'];
+				]]>
+			</add>
+		</operation>
+		<operation error="abort">
+			<!-- Diminuindo o Textarea -->
+			<search position="replace">
+				<![CDATA[
+				<textarea name="comment" rows="8"
+				]]>
+			</search>
+			<add>
+				<![CDATA[
+				<textarea name="comment" rows="3"
+				]]>
+			</add>
+		</operation>
+	</file>
+
+</modification>

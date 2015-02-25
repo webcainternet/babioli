@@ -1,0 +1,113 @@
+<modification>
+  <id><![CDATA[<a style="text-decoration:none" href="http://www.codemarket.com.br"><b  style="color:#00a99d;margin-right: 8px;">Code Market - PagSeguro Lightbox com Segunda Via</b></a>]]></id>
+  <version><![CDATA[1.2]]></version>
+  <vqmver><![CDATA[2.4.1]]></vqmver>
+    <author>
+        <![CDATA[<b><a style="color:#00a99d;" href="http://www.codemarket.com.br">Felipo Antonoff Araújo - codemarket.com.br</a></b>]]>
+    </author>
+
+    <file path="catalog/controller/payment/" name="pagseguro.php">
+      <operation info="">
+        <search position="after">
+          <![CDATA[$this->data['url'] = $url;
+  ]]>
+        </search>
+        <add>
+          <![CDATA[
+              $this->session->data['pagseguro_url'] = $url;
+              ]]>
+        </add>
+      </operation>
+
+      <operation info="">
+        <search position="replace">
+          <![CDATA[ $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('pagseguro_order_aguardando_retorno'));
+  ]]>
+        </search>
+        <add>
+          <![CDATA[
+
+            if(isset($this->session->data['pagseguro_url'])){
+              $url = $this->session->data['pagseguro_url'];
+              $h = HTTPS_SERVER.'image/pagseguro/segundavia.png';
+              $pagamento  = "
+                  Se não tiver pago, acesse a sua fatura do PagSeguro para efetuar o Pagamento<br>
+                  <a href='$url' rel='nofollow' target='_blank'><img src='$h'></a>
+              ";
+              unset($this->session->data['pagseguro_url']);
+            }else {
+              $pagamento  = "";
+            }
+              $this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('pagseguro_order_aguardando_retorno'), $pagamento, true);
+              ]]>
+        </add>
+      </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/checkout/" name="checkout.tpl">
+		<operation info="">
+			<search position="bottom">
+				<![CDATA[
+]]>
+			</search>
+			<add>
+				<![CDATA[
+				<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.lightbox.js"></script>
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/payment/" name="pagseguro.tpl">
+		<operation info="">
+			<search position="replace">
+				<![CDATA[    				location = '<?php echo $url; ?>';
+]]>
+			</search>
+			<add>
+				<![CDATA[
+PagSeguroLightbox({
+ code: '<?php echo substr($url,59); ?>'
+ }, {
+ success : function(transactionCode) {
+ 	 location.href='<?php echo $this->url->link('checkout/success'); ?>';
+ },
+ abort : function() {
+ alert("Pagamento incompleto!, efetue o Pedido Novamente e conclua o Pagamento.");
+ }
+ });
+if (!PagSeguroLightbox){
+ location.href='<?php echo $url; ?>';
+}
+				]]>
+			</add>
+		</operation>
+
+
+	</file>
+
+	<file path="catalog/language/portuguese-br/payment/" name="pagseguro.php">
+		<operation info="">
+			<search position="replace">
+				<![CDATA[  Ao clicar no botão abaixo, você será redirecionado para o site do PagSeguro para efeturar o pagamento. Ao concluir o pagamento você retornará automaticamente para a loja.
+]]>
+			</search>
+			<add>
+				<![CDATA[
+				Ao clicar no botão abaixo, ira abrir o Pagamento dentro da loja e com a segurança do Pagseguro.
+				]]>
+			</add>
+		</operation>
+
+		<operation info="">
+			<search position="replace">
+				<![CDATA[  Confirmar e ir para o PagSeguro
+]]>
+			</search>
+			<add>
+				<![CDATA[
+				Confirmar e abrir o Pagamento
+				]]>
+			</add>
+		</operation>
+	</file>
+</modification>

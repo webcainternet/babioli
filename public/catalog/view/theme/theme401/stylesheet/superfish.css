@@ -1,6 +1,7 @@
 /*** ESSENTIAL STYLES ***/
 #menu {
 	float:right;
+	margin-top: 39px;
 	}
 .sf-menu {
   position: relative;
@@ -8,13 +9,13 @@
   padding: 0;
   list-style: none;
 }
-ul.sf-menu > li:first-child {border-left:1px solid #393939;}
+ul.sf-menu > li:first-child { /* border-left:1px solid #393939; */}
 ul.sf-menu > li {
 	float: left;
 	z-index: 10;
 	position:relative;
 	border-radius:0;
-	border-right:1px solid #393939;
+	/* border-right:1px solid #393939; */
 	}
 ul.sf-menu > li > a {
 	vertical-align:middle;
@@ -37,7 +38,7 @@ ul.sf-menu > li > a {
 	}
 ul.sf-menu > li.current>a, ul.sf-menu > li>a:hover, ul.sf-menu > li.sfHover>a, ul.sf-menu > ul > li.active>a  {
 	color:#6c6c6c;
-	border-color:#f45c80;
+	border-color:#ec008c;
 	}
 .sf-menu .sf-mega {
 	display: none;
@@ -66,7 +67,7 @@ ul.sf-menu > li.current>a, ul.sf-menu > li>a:hover, ul.sf-menu > li.sfHover>a, u
 	border-top:1px solid #393939;
 	}
 .sf-mega-section >li a:hover, .sf-mega-section >li.sfHover>a {
-	color:#f45c80
+	color:#ec008c
 	}
 .sf-mega-section >li a {
 	font-family: 'Roboto',sans-serif;
@@ -122,7 +123,7 @@ ul.sf-menu > li.current>a, ul.sf-menu > li>a:hover, ul.sf-menu > li.sfHover>a, u
 	}
 /*****************************************************/
 #menu-icon {
-	background: #f45c80;
+	background: #ec008c;
 	color: #FFFFFF;
 	cursor: pointer;
 	display: block;
@@ -182,7 +183,7 @@ ul.sf-menu > li.current>a, ul.sf-menu > li>a:hover, ul.sf-menu > li.sfHover>a, u
 	height: 24px;
 	width: 24px;
   }
-  .sf-menu-phone  li  i {top: 8px;color:#f45c80; font-size:21px; padding:0 20px; right:5px}
+  .sf-menu-phone  li  i {top: 8px;color:#ec008c; font-size:21px; padding:0 20px; right:5px}
   .sf-menu-phone  li i.icon-angle-up:before {content:'\f106' !important}
   .sf-menu-phone li i:hover { cursor: pointer; }
   .sf-menu-phone li i.opened { background-position: center 7px; }

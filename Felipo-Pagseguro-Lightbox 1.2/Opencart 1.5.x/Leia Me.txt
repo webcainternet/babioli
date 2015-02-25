@@ -1,0 +1,4 @@
+Comprado na Code Market - 1 Licença de uso ou de acordo com sua compra
+
+Módulo Pagseguro API incluso, caso já tenha instalado ele, instale apenas o módulo da pasta vqmod, copiando a pasta vqmod para a raiz da sua loja e precisa estar instalado o vqmod 2.3.2 ou mais recente para funcionar.
+Para instalar o PagSeguro1.3.1, veja na pasta dele como fazer. 
