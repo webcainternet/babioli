@@ -24,14 +24,13 @@ ul.sf-menu > li > a {
 	display:inline-block;
 	z-index: 1;
 	position: relative;
-	font-size:24px;
+	font-size:20px;
 	color:#ffffff;
 	font-weight:bold;
 	text-decoration:none;
 	line-height:28px;
 	text-transform:uppercase;
 	height:111px;
-	max-width:140px;
 	text-align:center;
 	border-bottom:4px solid transparent;
 	display:table-cell;
