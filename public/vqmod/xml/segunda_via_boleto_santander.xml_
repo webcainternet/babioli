@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>
+		<![CDATA[Segunda Via Boleto na Lista de pedidos]]>
+	</id>
+	<version>
+		<![CDATA[1.0]]>
+	</version>
+	<vqmver>
+		<![CDATA[2.4.1]]>
+	</vqmver>
+	<author>
+		<![CDATA[Rogerio Alan Dobler - rogerioalandobler@hotmail.com]]>
+	</author>
+	<file name="catalog/view/theme/*/template/account/order_list.tpl">
+		<operation>
+			<search position="after"><![CDATA[<div class="order-id"><b><?php echo $text_order_id; ?></b> #<?php echo $order['order_id']; ?></div>]]></search>
+			<add>
+            <![CDATA[
+            <?php
+                    echo '<div class="order-status"><a style="font-weight:bold;color:greem" target="_blank" href="index.php?route=payment/bancosantander/gerarboleto&pedido=' . $order['order_id'] . '">Emitir 2&ordf; via do Boleto</a></div>';
+            ?>
+            ]]>
+            </add>
+		</operation>
+	</file>
+</modification>
