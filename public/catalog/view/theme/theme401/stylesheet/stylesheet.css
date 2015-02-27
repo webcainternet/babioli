@@ -334,7 +334,7 @@ a#hidden {
 header {
 	position: relative;
 	color:#9d9d9d;
-	background-color:#222222;
+	background-color:#333;
 	margin-bottom:30px;
 	}
 header #logo a img {
@@ -3095,7 +3095,7 @@ footer {
 	padding-top:50px;
 	clear: both;
 	overflow: hidden;
-	background-color:#222222;
+	background-color:#333;
 	}
 footer h3 {
 	color:#ffffff;
@@ -3559,4 +3559,8 @@ table.radio {margin:0; display:table}
 #fancybox-content {background-color:#fff;}
 .zoomContainer{
 z-index:8;
+}
+
+#payment-address .checkout-content .left {
+width: 49%; float: left;
 }

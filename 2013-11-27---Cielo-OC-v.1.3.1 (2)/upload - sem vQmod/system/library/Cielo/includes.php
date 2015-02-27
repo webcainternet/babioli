@@ -1,0 +1,18 @@
+<?php
+/**
+ * Módulo Cielo para OpenCart 1.5.3.1 a 1.5.6
+ * Integração direta com a Cielo,
+ * sem utilização de Gateways de pagamento
+ * 
+ * Este é um arquivo de requires.
+ * Em versões futuras do módulo este arquivo
+ * poderá sofrer adição de funcionalidades.
+ * 
+ * @author  Victor Schröder <domains@egeeks.com.br>
+ * @copyright  Copyright (c) 2012, Victor Schröder. All rights reserved. Must buy a Commercial Licence (per store).
+ * @link  http://www.opencart.com/index.php?route=extension/extension/info&extension_id=8855
+ */
+require_once('cielo.php');
+require_once('logger.php');
+if (version_compare(phpversion(), '5.3.0', '>=') == true) require_once('ga.php');
+?>

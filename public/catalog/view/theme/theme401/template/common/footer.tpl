@@ -76,12 +76,21 @@
 	
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-12">
+			<div class="col-sm-12" style="width: 49%;">
 				<div id="powered">
 					<?php echo $powered; ?><!-- [[%FOOTER_LINK]] -->
 				</div>
 			</div>
+
+			<div class="col-sm-12" style="width: 49%; text-align: right;">
+				<div id="powered">
+					pagseguro_transp
+				</div>
+			</div>
 		</div>
+
+
+		
 	</div>
 </footer>
 <script type="text/javascript" 	src="catalog/view/theme/<?php echo $this->config->get('config_template');?>/js/livesearch.js"></script>

@@ -122,7 +122,7 @@
 						
 					</div>
 				</div>
-				<a href="<?php echo $product['href']; ?>" class="colorbox<?php echo $i;?> quick-view-button"><i class=" fa fa-search "></i></a>
+				<?php /* <a href="<?php echo $product['href']; ?>" class="colorbox<?php echo $i;?> quick-view-button"><i class=" fa fa-search "></i></a> */ ?>
 				<div class="inner">
 					<div class="f-left">
 						
@@ -141,7 +141,7 @@
 					<div class="cart-button">
 						<div class="cart">
 							<a title="<?php echo $button_cart; ?>" data-id="<?php echo $product['product_id']; ?>;" class="button addToCart">
-								<span><?php echo $button_cart; ?></span>
+								<span>Ver produto</span>
 							</a>
 						</div>
 						<span class="clear"></span>

@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Cielo OpenCart Module by Victor Schröder</id>
+	<version>1.0</version>
+	<vqmver>1.0.8</vqmver>
+	<author>Victor Schröder</author>
+	<file name="admin/controller/sale/order.php">
+		<operation>
+			<search position="before"><![CDATA[if ($order_info['total'] < 0) {]]></search>
+			<add><![CDATA[			$this->getCielo($order_info);
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace" offset="7"><![CDATA[$this->template = 'sale/order_invoice.tpl';]]></search>
+			<add><![CDATA[
+		$this->template = 'sale/order_invoice.tpl';
+		
+		$this->response->setOutput($this->render());
+	}
+	
+	private function getCielo($order_info) {
+		
+		
+		if ($order_info['payment_code'] == 'cielo') {
+			$this->data['tem_cielo'] = true;
+		} else {
+			$this->data['tem_cielo'] = false;
+			return;
+		}
+		
+		$this->document->addScript('view/javascript/jquery/cluetip/jquery.cluetip.js');
+		$this->document->addStyle('view/javascript/jquery/cluetip/jquery.cluetip.css');
+		
+		$this->data['oc_token'] = $this->session->data['token'];
+		
+		$order_id = $order_info['order_id'];
+		
+		$this->session->data['GA']['cielo']['user'] = 'admin';
+		$this->load->library('Cielo/includes');
+		$this->load->language('payment/cielo');
+
+		$text_strings = array(
+			'tab_cielo',
+			'table_resumo_title',
+			'table_resumo_transacao',
+			'table_resumo_status',
+			'table_resumo_bandeira',
+			'table_resumo_operacao',
+			'table_resumo_n_parcelas',
+			'table_resumo_autenticacao',
+			'table_resumo_autorizacao',
+			'table_resumo_codigo_lr',
+			'table_resumo_mensagem_cielo',
+			'table_resumo_data',
+			'table_resumo_valor',
+			'table_resumo_captura',
+			'table_resumo_cancelamentos',
+			'table_resumo_cancel_valor_data',
+			'table_resumo_cancel_total',
+			'cielo_text_table_title',
+			'cielo_text_tab_transacao',
+			'cielo_text_tab_tid',
+			'cielo_text_tab_buy_page',
+			'cielo_text_tab_teste',
+			'cielo_text_tab_transacao',
+			'cielo_text_tab_operacao',
+			'cielo_text_tab_status',
+			'cielo_text_tab_valor',
+			'cielo_text_tab_parcelas',
+			'cielo_text_selecione_tid',
+			'cielo_text_selecione_acao',
+			'cielo_text_selecione_valor',
+			'cielo_text_proxima_acao',
+			'cielo_text_option_tid',
+			'cielo_text_option_acao',
+			'cielo_text_capturar',
+			'cielo_text_cancelar',
+			'cielo_text_consultar',
+			'cielo_text_autorizar',
+			'cielo_text_executar',
+			'text_script_title',
+			'text_script_title_alerta',
+			'text_script_nao_feche',
+			'text_script_ocorreu_um_erro',
+			'text_script_captura_processada',
+			'text_script_cancelamento_processado',
+			'text_script_consulta_processada',
+			'text_script_autorizacao_processada',
+			'text_script_erro_inesperado',
+			'text_script_erro_timeout',
+			'text_script_erro_comunicacao',
+			'text_script_erro_negativo',
+			'text_script_erro_NAN',
+			'text_script_botao_retornar',
+			'text_script_botao_fechar',
+			'text_script_mensagem',
+			'text_script_valor',
+			'text_author'
+		);
+		
+		foreach ($text_strings as $text) {
+			$this->data[$text] = $this->language->get($text);
+		}
+		
+		$this->load->model('payment/cielo');
+		
+		$this->data['cielo_transacoes'] = $this->model_payment_cielo->getTransacoes($order_id);
+		
+		$tids = array();
+		
+		foreach ($this->data['cielo_transacoes'] as $transacao) {
+			if (isset($transacao['tid']) && !in_array($transacao['tid'], $tids)) $tids[] = $transacao['tid'];
+		}
+		
+		$this->data['cielo_tids'] = $tids;
+		
+		$this->data['situacoes'] = array();
+		
+		foreach ($tids as $tid) {
+			foreach ($this->data['cielo_transacoes'] as $transacao) {
+				if ($transacao['tid'] == $tid && isset($transacao['xml_recebido'])) {
+					$xml = simplexml_load_string($transacao['xml_recebido'], 'SimpleXMLElement', LIBXML_NOCDATA);
+					if (isset($xml->tid)) $XML = $xml;
+					unset($xml);
+				}
+			}
+			if (!isset($XML)) {
+				$this->data['situacoes'][$tid]['erro'] = $this->language->get('table_resumo_sem_consultas');
+			} else {
+				$this->data['situacoes'][$tid]['status'] = $this->language->get('traduz_status_' . $XML->status);
+				// Operação
+				$this->data['situacoes'][$tid]['bandeira'] = $this->language->get('traduz_bandeira_' . $XML->{'forma-pagamento'}->bandeira);
+				$this->data['situacoes'][$tid]['produto'] = $this->language->get('traduz_produto_' . $XML->{'forma-pagamento'}->produto);
+				$this->data['situacoes'][$tid]['parcelas'] = (int)$XML->{'forma-pagamento'}->parcelas;
+				// Autenticação
+				$this->data['situacoes'][$tid]['eci'] = $this->language->get('traduz_eci_' . (isset($XML->autenticacao->eci) ? $XML->autenticacao->eci : 'NNN'));
+				// Autorização
+				if(isset($XML->autorizacao)) {
+					$this->data['situacoes'][$tid]['lr'] = in_array((string)$XML->autorizacao->lr, Cielo::$lr_array) ? $this->language->get('traduz_lr_' . (string)$XML->autorizacao->lr) : (string)$XML->autorizacao->lr . '-' . $this->language->get('traduz_lr_NNN');
+					$this->data['situacoes'][$tid]['mensagem'] = (string)$XML->autorizacao->mensagem;
+					$d = new DateTime($XML->autorizacao->{'data-hora'});
+					$this->data['situacoes'][$tid]['aut_data'] = $d->format('d/m/Y H:i:s');
+					unset($d);
+					$this->data['situacoes'][$tid]['aut_valor'] = $this->currency->format((float)$XML->autorizacao->valor/100, 'BRL', 1);
+				}
+				// Captura
+				if (isset($XML->captura)) {
+					$d = new DateTime($XML->captura->{'data-hora'});
+					$this->data['situacoes'][$tid]['cap_data'] = $d->format('d/m/Y H:i:s');
+					unset($d);
+					$this->data['situacoes'][$tid]['cap_valor'] = $this->currency->format((float)$XML->captura->valor/100, 'BRL', 1);
+				}
+				// Cancelamentos
+				if (isset($XML->cancelamentos)) {
+					$this->data['situacoes'][$tid]['cancelamentos'] = array();
+					$this->data['situacoes'][$tid]['cancel_total'] = 0;
+					foreach($XML->cancelamentos->cancelamento as $cancelamento) {
+						$d = new DateTime($cancelamento->{'data-hora'});
+						$this->data['situacoes'][$tid]['cancelamentos'][] = array(
+						'mensagem' => (string)$cancelamento->mensagem,
+						'data' => $d->format('d/m/Y H:i:s'),
+						'valor' => $this->currency->format((float)$cancelamento->valor/100, 'BRL', 1)
+						);
+						unset($d);
+						$this->data['situacoes'][$tid]['cancel_total'] += (float)$cancelamento->valor/100;
+					}
+					$this->data['situacoes'][$tid]['cancel_total'] = $this->currency->format($this->data['situacoes'][$tid]['cancel_total'], 'BRL', 1);
+				}
+				
+				unset($XML);
+			}
+		}
+		
+		foreach ($this->data['cielo_transacoes'] as &$transacao) {
+			$transacao['transacao'] = $this->language->get('transacao_' . $transacao['transacao']);
+			$transacao['buy_page'] = $this->language->get('buy_page_' . $transacao['buy_page']);
+			$transacao['teste'] = $transacao['teste'] == 'y' ? $this->language->get('text_yes') : $this->language->get('text_no');
+			$transacao['valor'] = $this->currency->format(((float)$transacao['valor'])/100, 'BRL', 1);
+			$transacao['status'] = $this->language->get('traduz_status_' . $transacao['status']);
+		}
+		
+	}
+	
+	public function ajaxcielo() {
+		
+		$this->session->data['GA']['cielo']['user'] = 'admin';
+		$this->load->library('Cielo/includes');
+		$cielo_config = $this->config->get('cielo_config');
+		$this->language->load('payment/cielo');
+
+		$Cielo = new Cielo($this->registry);
+		
+		$acao = $this->request->post['cielo_acao'];
+		$tid = $this->request->post['cielo_tid'];
+		$valor = (int)((float)$this->request->post['cielo_valor']*100);
+		$order_id = $this->request->post['cielo_order_id'];
+		
+		$Cielo->set('dadosPedidoNumero', $order_id);
+		
+		$json = array();
+		
+		switch ($acao) {
+			case 'capturar':
+				$resultado = $Cielo->capturar($tid, $valor);
+				$XML = $resultado['xml'];
+				if (!isset($XML->tid)) {
+					$json['error']['code'] = (string)$XML->codigo;
+					$json['error']['message'] = (string)$XML->mensagem;
+				} elseif (isset($XML->captura)) {
+					$json['captura']['code'] = (string)$XML->captura->codigo;
+					$json['captura']['message'] = (string)$XML->captura->mensagem;
+					$json['captura']['valor'] = (string)(((float)$XML->captura->valor)/100);
+				} else {
+					$json['error']['code'] = 'XX';
+					$json['error']['message'] = $this->language->get('cielo_erro_inesperado');
+				}
+				break;
+			case 'cancelar':
+				$resultado = $Cielo->cancelar($tid, $valor);
+				$XML = $resultado['xml'];
+				if (!isset($XML->tid)) {
+					$json['error']['code'] = (string)$XML->codigo;
+					$json['error']['message'] = (string)$XML->mensagem;
+				} elseif (isset($XML->cancelamentos)) {
+					$data = 0;
+					$i = 0;
+					foreach($XML->cancelamentos->cancelamento as $key => $cancelamento) {
+						$ndata = (float)preg_replace('/\D/', '', substr($cancelamento->{'data-hora'}, 0, -9));
+						if ($ndata > $data) {
+							$i = $key;
+							$data = $ndata;
+							$obj = $cancelamento;
+						}
+					}
+					$json['cancelamento']['code'] = (string)$obj->codigo;
+					$json['cancelamento']['message'] = (string)$obj->mensagem;
+				} else {
+					$json['error']['code'] = 'XX';
+					$json['error']['message'] = $this->language->get('cielo_erro_inesperado');
+				}
+				break;
+			case 'consultar':
+				$resultado = $Cielo->consultar($tid);
+				$XML = $resultado['xml'];
+				if (!isset($XML->tid)) {
+					$json['error']['code'] = (string)$XML->codigo;
+					$json['error']['message'] = (string)$XML->mensagem;
+				} elseif (isset($XML->tid)) {
+					$json['consulta']['xml'] = htmlentities((string)$XML->asXML());
+				} else {
+					$json['error']['code'] = 'XX';
+					$json['error']['message'] = $this->language->get('cielo_erro_inesperado');
+				}
+				break;
+			case 'autorizar':
+				$resultado = $Cielo->autorizarTID($tid);
+				$XML = $resultado['xml'];
+				if (!isset($XML->tid)) {
+					$json['error']['code'] = (string)$XML->codigo;
+					$json['error']['message'] = (string)$XML->mensagem;
+				} elseif (isset($XML->autorizacao)) {
+					$json['autorizacao']['code'] = (string)$XML->autorizacao->codigo;
+					$json['autorizacao']['message'] = (string)$XML->autorizacao->mensagem;
+					$json['autorizacao']['valor'] = (string)(((float)$XML->autorizacao->valor)/100);
+					$json['autorizacao']['lr'] = (string)$XML->autorizacao->lr;
+				} else {
+					$json['error']['code'] = 'XX';
+					$json['error']['message'] = $this->language->get('cielo_erro_inesperado');
+				}
+				break;
+			default:
+				$resultado = false;
+				$json['error']['code'] = 'XX';
+				$json['error']['message'] = $this->language->get('cielo_erro_inesperado');
+				break;
+		}
+			
+		$this->load->model('payment/cielo');
+		
+		if ($resultado) $this->model_payment_cielo->add($Cielo);
+		
+		echo json_encode($json);
+		exit();
+		
+		// TODO fazer o update do status do pedido mediante as requisições
+		
+		return;
+		
+	}
+	
+}
+?>]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/sale/order_info.tpl">
+		<operation>
+			<search position="after"><![CDATA[<a href="#tab-fraud"><?php echo $tab_fraud; ?></a>]]></search>
+			<add><![CDATA[		<?php } ?>
+		<?php if ($tem_cielo) { ?>
+		<a href="#tab-cielo"><?php echo $tab_cielo; ?></a>]]></add>
+		</operation>
+		<operation>
+			<search position="replace" offset="8"><![CDATA[<td><?php echo $error; ?></td>]]></search>
+			<add><![CDATA[<td><?php echo $error; ?></td>
+          </tr>
+          <?php } ?>
+        </table>
+      </div>
+      <?php } ?>
+		<?php if ($tem_cielo) { ?>
+			<div id="tab-cielo" class="vtabs-content">
+				<?php foreach($situacoes as $tid => $situacao) { ?>
+					<table class="tid">
+						<tr><td colspan="2" style="text-align:center;"><?php echo $table_resumo_title; ?>&nbsp;<b><?php echo $tid; ?></td></tr>
+						<?php if(isset($situacao['erro'])) { ?>
+							<tr><td><?php echo $table_resumo_status; ?></td><td><?php echo $situacao['erro']; ?></td></tr>
+						<?php } else { ?>
+							<tr class="transacao"><td colspan="2"><b><?php echo $table_resumo_transacao; ?></b></td></tr>
+							<tr class="transacao"><td><?php echo $table_resumo_status; ?></td><td><b><?php echo $situacao['status']; ?></b></td></tr>
+							<tr class="transacao"><td><?php echo $table_resumo_bandeira; ?></td><td><?php echo $situacao['bandeira']; ?></td></tr>
+							<tr class="transacao"><td><?php echo $table_resumo_operacao; ?></td><td><?php echo $situacao['produto']; ?></td></tr>
+							<tr class="transacao"><td><?php echo $table_resumo_n_parcelas; ?></td><td><?php echo $situacao['parcelas']; ?></td></tr>
+							<tr class="transacao"><td><?php echo $table_resumo_autenticacao; ?></td><td><?php echo $situacao['eci']; ?></td></tr>
+							<?php if(isset($situacao['lr'])) { ?>
+								<tr class="autorizacao"><td colspan="2"><b><?php echo $table_resumo_autorizacao; ?></b></td></tr>
+								<tr class="autorizacao"><td><?php echo $table_resumo_codigo_lr; ?></td><td><?php echo $situacao['lr']; ?></td></tr>
+								<tr class="autorizacao"><td><?php echo $table_resumo_mensagem_cielo; ?></td><td><?php echo $situacao['mensagem']; ?></td></tr>
+								<tr class="autorizacao"><td><?php echo $table_resumo_data; ?></td><td><?php echo $situacao['aut_data']; ?></td></tr>
+								<tr class="autorizacao"><td><?php echo $table_resumo_valor; ?></td><td><?php echo $situacao['aut_valor']; ?></td></tr>
+							<?php } ?>
+							<?php if(isset($situacao['cap_data'])) { ?>
+								<tr class="captura"><td colspan="2"><b><?php echo $table_resumo_captura; ?></b></td></tr>
+								<tr class="captura"><td><?php echo $table_resumo_data; ?></td><td><?php echo $situacao['cap_data']; ?></td></tr>
+								<tr class="captura"><td><?php echo $table_resumo_valor; ?></td><td><?php echo $situacao['cap_valor']; ?></td></tr>
+							<?php } ?>
+							<?php if(isset($situacao['cancelamentos'])) { ?>
+								<tr class="cancelamento"><td colspan="2"><b><?php echo $table_resumo_cancelamentos; ?></b></td></tr>
+								<?php foreach($situacao['cancelamentos'] as $i => $cancelamento) { ?>
+									<tr class="cancelamento"><td><?php echo $i+1; ?></td><td><?php echo sprintf($table_resumo_cancel_valor_data, $cancelamento['valor'], $cancelamento['data']); ?></td></tr>
+									<tr class="cancelamento"><td><?php echo $table_resumo_mensagem_cielo; ?></td><td><?php echo $cancelamento['mensagem']; ?></td></tr>
+								<?php } ?>
+								<tr class="cancelamento"><td><?php echo $table_resumo_cancel_total; ?></td><td><?php echo $situacao['cancel_total']; ?></td></tr>
+							<?php } ?>
+						<?php } ?>
+					</table>
+				<?php } ?>			
+				<br /><br />
+				<table class="form cielo">
+					<tr><td colspan="7" style="text-align:center;"><b><?php echo $cielo_text_table_title; ?></b></td></tr>
+					<tr>
+						<td><b><?php echo $cielo_text_tab_transacao; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_tid; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_buy_page; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_teste; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_operacao; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_valor; ?></b></td>
+						<td><b><?php echo $cielo_text_tab_status; ?></b></td>
+					</tr>					
+					<?php foreach ($cielo_transacoes as $transacao) { ?>
+						<tr>
+							<td><?php echo $transacao['transacao']; ?></td>
+							<td><?php echo $transacao['tid']; ?></td>
+							<td><?php echo $transacao['buy_page']; ?></td>
+							<td><?php echo $transacao['teste']; ?></td>
+							<td><?php echo $transacao['operacao']; ?></td>
+							<td><?php echo $transacao['valor']; ?></td>
+							<td><?php echo $transacao['status']; ?></td>
+						</tr>
+					<?php } ?>
+				</table>
+				<table class="form cielo">
+					<tr>
+						<td>&nbsp;</td>
+						<td><b><?php echo $cielo_text_selecione_tid; ?></b></td>
+						<td><b><?php echo $cielo_text_selecione_acao; ?></b></td>
+						<td><b><?php echo $cielo_text_selecione_valor; ?></b></td>
+					</tr>
+					<tr>
+						<td><?php echo $cielo_text_proxima_acao; ?></td>
+						<td>
+							<select name="cielo_tid">
+								<option value=""><?php echo $cielo_text_option_tid; ?></option>
+							<?php foreach ($cielo_tids as $tid) { ?>
+								<option value="<?php echo $tid; ?>"><?php echo $tid; ?></option>
+							<?php } ?>
+							</select>
+						</td>
+						<td>
+							<select name="cielo_acao">
+								<option value=""><?php echo $cielo_text_option_acao; ?></option>
+								<option value="capturar"><?php echo $cielo_text_capturar; ?></option>
+								<option value="cancelar"><?php echo $cielo_text_cancelar; ?></option>
+								<option value="consultar"><?php echo $cielo_text_consultar; ?></option>
+								<option value="autorizar"><?php echo $cielo_text_autorizar; ?></option>
+							</select>
+							<input type="hidden" name="cielo_order_id" value="<?php echo $order_id; ?>" />
+						</td>
+						<td><input type="text" name="cielo_valor" value="" /></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+						<td><a onclick="executar_cielo();" class="button" id="button-cielo"><?php echo $cielo_text_executar; ?></a></td>
+					</tr>
+				</table>
+				<div style="float:right;"><?php echo $text_author; ?></div>
+				<div id="cielo-popin" style="display:none;"></div>
+			</div>
+		<?php } ?>
+    </div>
+  </div>
+</div>
+<?php if($tem_cielo) { ?>
+	<style type="text/css">
+		img.tip {position:relative;top:3px;}
+		table.tid {display:inline-block;vertical-align:top;border:1px solid black;margin-right:5px;}
+		tr.transacao {background-color:#DDDDDD;}
+		tr.autorizacao {background-color:#B9ECFA;}
+		tr.captura {background-color:#B9FAD9;}
+		tr.cancelamento {background-color:#FCAEAE;}
+	</style>
+	<script type="text/javascript"><!--
+		$(document).ready(function() {
+			$('img.tip[title]').cluetip({
+				splitTitle: '|',
+				arrows: true,
+				showTitle: false
+			});
+			
+			$('input[name="cielo_valor"]')
+				.on('keyup', function(event) {
+					var $elem = $(this);
+					$elem.val($elem.val().replace(/[^\d\.]/g, ''));
+				})
+				.on('focusout', function(event) {
+					var $elem = $(this);
+					$elem.trigger('keyup');
+					if ($elem.val() < 0) {
+						$elem.val('');
+						$('<p><?php echo $text_script_erro_negativo; ?></p>')
+							.dialog({height: 200, width: 300, modal: true,  buttons:{
+								'<?php echo $text_script_botao_retornar; ?>': function(){
+									$elem.focus();
+								$(this).dialog('destroy');}
+							}, title: '<?php echo $text_script_title_alerta; ?>'});
+						$('.ui-icon-closethick').parent().css({'display':'none'});
+					} else if (isNaN($elem.val()) && $elem.val() != '') {
+						$elem.val('');
+						$('<p><?php echo $text_script_erro_NAN; ?></p>')
+							.dialog({height: 200, width: 300, modal: true,  buttons:{
+								'<?php echo $text_script_botao_retornar; ?>': function(){
+									$elem.focus();
+								$(this).dialog('destroy');}
+							}, title: '<?php echo $text_script_title_alerta; ?>'});
+						$('.ui-icon-closethick').parent().css({'display':'none'});
+					}
+				});
+			
+		});
+	//--></script>
+	<script type="text/javascript"><!--
+		var executar_cielo = function() {
+			$.ajax({
+				url: 'index.php?route=sale/order/ajaxcielo&token=<?php echo $oc_token; ?>',
+				type: 'post',
+				data: $('[name=\'cielo_tid\'], [name=\'cielo_acao\'], [name=\'cielo_order_id\'], [name=\'cielo_valor\']'),
+				dataType: 'json',
+				timeout: 40000,
+				beforeSend: function() {
+					$('#button-cielo').attr('disabled', true);
+					$('#cielo-popin')
+						.empty()
+						.append('<p><?php echo $text_script_nao_feche; ?></p><div class="wait" style="text-align:center;"><img src="view/image/loading.gif" alt="" /></div>')
+						.dialog({height: 200, width: 400, modal: true,  buttons: {}, title: '<?php echo $text_script_title; ?>'});
+					$('.ui-icon-closethick').parent().css({'display':'none'});
+				},
+				complete: function() {
+					$('#cielo-popin > .wait').remove();
+				},
+				success: function(json) {
+					if (json['error']) {
+						$('#cielo-popin')
+							.empty()
+							.append('<p class="warning" style="display: none;"><?php echo $text_script_ocorreu_um_erro; ?> <b>' + json['error']['code'] + '</b>. ' + json['error']['message'] + '</p>')
+							.dialog({height:300, buttons:[
+								{	text: '<?php echo $text_script_botao_retornar; ?>',
+									click: function(){location.reload();}
+								}
+								]});
+						$('.warning').fadeIn('slow');
+					} else if (json['captura']) {
+						$('#cielo-popin')
+							.empty()
+							.append('<p><?php echo $text_script_captura_processada; ?> ' + json['captura']['code'] + '.<br /><?php echo $text_script_mensagem; ?>:  ' + json['captura']['message'] + '.<br /><?php echo $text_script_valor; ?>: ' + json['captura']['valor'] + '</p>')
+							.dialog({height:300, buttons:[
+								{	text: '<?php echo $text_script_botao_retornar; ?>',
+									click: function(){location.reload();}
+								}
+								]});
+					} else if (json['cancelamento']) {
+						$('#cielo-popin')
+							.empty()
+							.append('<p><?php echo $text_script_cancelamento_processado; ?> ' + json['cancelamento']['code'] + '.<br /><?php echo $text_script_mensagem; ?>:  ' + json['cancelamento']['message'] + '.<br /><?php echo $text_script_valor; ?>: ' + json['cancelamento']['valor'] + '</p>')
+							.dialog({height:300, buttons:[
+								{	text: '<?php echo $text_script_botao_retornar; ?>',
+									click: function(){location.reload();}
+								}
+								]});
+					} else if (json['consulta']) {
+						$('#cielo-popin')
+							.empty()
+							.append('<p><?php echo $text_script_consulta_processada; ?> <pre>' + json['consulta']['xml'] + '</pre></p>')
+							.dialog({width:650, height:500, buttons:[
+								{	text: '<?php echo $text_script_botao_retornar; ?>',
+									click: function(){location.reload();}
+								}
+								]});
+					} else if (json['autorizacao']) {
+						$('#cielo-popin')
+						.empty()
+						.append('<p><?php echo $text_script_autorizacao_processada; ?> ' + json['autorizacao']['code'] + '.<br /><?php echo $text_script_mensagem; ?>:  ' + json['autorizacao']['message'] + '.<br /><?php echo $text_script_valor; ?>: ' + json['autorizacao']['valor'] + '.<br />LR Code: ' + json['autorizacao']['lr'] + '</p>')
+						.dialog({height:300, buttons:[
+						{	text: '<?php echo $text_script_botao_retornar; ?>',
+							click: function(){location.reload();}
+						}
+						]});
+					} else {
+						$('#cielo-popin')
+							.empty()
+							.append('<p class="warning" style="display: none;"><?php echo $text_script_erro_inesperado; ?></p>')
+							.dialog({buttons:[
+								{	text: '<?php echo $text_script_botao_fechar; ?>',
+									click: function() {
+										$('#cielo-popin').empty().dialog('close');
+									}
+								}
+								]});
+							$('.warning').fadeIn('slow');
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					if (ajaxOptions === 'timeout') {
+						$('#cielo-popin')
+							.empty()
+							.append('<p class="warning" style="display:none;"><?php echo $text_script_erro_timeout; ?> ' + thrownError + ' - ' + xhr.statusText + ' - ' + xhr.responseText + '</p>')
+							.dialog('option', 'buttons', [
+								{	text: '<?php echo $text_script_botao_fechar; ?>',
+									click: function() {
+										$('#cielo-popin').empty().dialog('close');
+									}
+								}]);
+						$('.warning').fadeIn('slow');
+					} else {
+						$('#cielo-popin')
+							.empty()
+							.append('<p class="warning" style="display:none;"><?php echo $text_script_erro_comunicacao; ?> ' + thrownError + ' - ' + xhr.statusText + ' - ' + xhr.responseText + '</p>')
+							.dialog({height:300, buttons:[
+								{	text: '<?php echo $text_script_botao_fechar; ?>',
+									click: function() {
+										$('#cielo-popin').empty().dialog('close');
+									}
+								}
+								]});
+						$('.warning').fadeIn('slow');
+					}
+				}
+			});
+		};
+	//--></script>
+<?php } ?>]]></add>
+		</operation>
+	</file>
+</modification>
