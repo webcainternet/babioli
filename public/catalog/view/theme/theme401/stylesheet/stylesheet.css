@@ -1271,7 +1271,7 @@ a.button {
 	display: inline-block;
 	text-decoration: none;
 	cursor: pointer;
-	background:#222222;
+	background:#383838;
 	font-size:12px;
 	line-height:18px;
 	}
@@ -2294,7 +2294,7 @@ a.button-prod:hover {
 	}
 a.button-prod {
 	display:inline-block;
-	background-color:#222222;
+	background-color:#383838;
 	font-family: 'Roboto Slab',serif;
 	text-transform:uppercase;
 	font-weight:bold;

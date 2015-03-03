@@ -49,14 +49,6 @@
 				</ul>
 			</div>
 			<div class="col-sm-2">
-				<h3><?php echo $text_follow; ?></h3>
-				<ul>
-					<li><a href="http://facebook.com"><i class="fa fa-facebook-square"></i><?php echo $text_fb; ?></a></li>
-					<li><a href="http://twitter.com"><i class="fa fa-twitter-square"></i><?php echo $text_twi; ?></a></li>
-					<li><a href="#"><i class="fa fa-rss-square"></i><?php echo $text_rss; ?></a></li>
-				</ul>
-			</div>
-			<div class="col-sm-2">
 				<h3><?php echo $text_support; ?></h3>
 				<div class="foot-phone">
 					<div class="extra-wrap">
