@@ -534,7 +534,7 @@ body.ind .swipe-left {
 .toprow .header-button .ul {
 	display:none;
 	position:absolute;
-	background-color:#686868;
+	background-color:#383838;
 	border:1px solid #222222;
 	width:32px;
 	top:30px;
@@ -847,7 +847,7 @@ header #cart .empty {
 /****************************************************************************************************************************************************************************************/
 header .toprow {
 	width:100%;
-	background-color:#686868;
+	background-color:#383838;
 	padding:11px 0px 12px;
 	}
 header .toprow-1 {
@@ -2294,7 +2294,7 @@ a.button-prod:hover {
 	}
 a.button-prod {
 	display:inline-block;
-	background-color:#686868;
+	background-color:#383838;
 	font-family: 'Roboto Slab',serif;
 	text-transform:uppercase;
 	font-weight:bold;
