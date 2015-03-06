@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Auto Completar Endereço</id>
+	<version>1.1</version>
+	<vqmver>2.2.1</vqmver>
+	<author>Deives Fahl - dfahl.cps@gmail.com</author>
+	<file name="catalog/model/localisation/zone.php">
+		<operation>
+			<search position="before" index="1"><![CDATA[public function getZone($zone_id) {]]></search>
+			<add><![CDATA[
+				public function getZonesByEstado($estado) {
+					if(strlen($estado) <= 2){
+						$query = $this->db->query("SELECT zone_id FROM " . DB_PREFIX . "zone WHERE country_id = '30' AND code = '".$estado."' AND status = '1' ORDER BY name");
+						$zone_id = $query->row['zone_id'];
+					}else{
+						$zone_id = '';
+					}
+					return $zone_id;
+				}
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/controller/account/register.php">
+		<operation>
+			<search position="before" index="1"><![CDATA[public function country() {]]></search>
+			<add><![CDATA[
+				public function estado_autocompletar() {
+					$this->load->model('localisation/zone');
+					$code = $this->model_localisation_zone->getZonesByEstado($this->request->get['estado']);
+					if ($code != '') {
+						$output = $code;
+					}else{
+						$output = '';
+					}
+					$this->response->setOutput($output);
+				}
+			]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/view/theme/*/template/account/register.tpl">
+		<operation>
+			<search position="after" index="1"><![CDATA[<?php echo $header; ?>]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+		
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"]').find('option[value="30"]').attr('selected', true);
+								$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+									$.ajax({
+										url: 'index.php?route=account/register/country&country_id=30',
+										dataType: 'json',
+										beforeSend: function() {
+											$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+										},
+										complete: function() {
+											$('.wait').remove();
+										},			
+										success: function(json) {
+											if (json['postcode_required'] == '1') {
+												$('#postcode-required').show();
+											} else {
+												$('#postcode-required').hide();
+											}
+	
+											var html = '<option value=""><?php echo $text_select; ?></option>';
+	
+											if (json['zone'] != '') {
+												for (i = 0; i < json['zone'].length; i++) {
+													html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+													
+													if (json['zone'][i]['zone_id'] == zone_id) {
+														html += ' selected="selected"';
+													}
+									
+													html += '>' + json['zone'][i]['name'] + '</option>';
+												}
+											} else {
+												html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+											}
+	
+											$('select[name=\'zone_id\']').html(html);
+										}
+									});
+								});
+							}
+						});
+					});
+				});	
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/account/address_form.tpl">
+		<operation>
+			<search position="after" index="1"><![CDATA[<div id="content">]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+		
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"]').find('option[value="30"]').attr('selected', true);
+								$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+									$.ajax({
+										url: 'index.php?route=account/register/country&country_id=30',
+										dataType: 'json',
+										beforeSend: function() {
+											$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+										},
+										complete: function() {
+											$('.wait').remove();
+										},			
+										success: function(json) {
+											if (json['postcode_required'] == '1') {
+												$('#postcode-required').show();
+											} else {
+												$('#postcode-required').hide();
+											}
+	
+											var html = '<option value=""><?php echo $text_select; ?></option>';
+	
+											if (json['zone'] != '') {
+												for (i = 0; i < json['zone'].length; i++) {
+													html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+													
+													if (json['zone'][i]['zone_id'] == zone_id) {
+														html += ' selected="selected"';
+													}
+									
+													html += '>' + json['zone'][i]['name'] + '</option>';
+												}
+											} else {
+												html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+											}
+	
+											$('select[name=\'zone_id\']').html(html);
+										}
+									});
+								});
+							}
+						});
+					});
+				});	
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/affiliate/register.tpl">
+		<operation>
+			<search position="after" index="1"><![CDATA[<?php echo $header; ?>]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+		
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"]').find('option[value="30"]').attr('selected', true);
+								$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+									$.ajax({
+										url: 'index.php?route=account/register/country&country_id=30',
+										dataType: 'json',
+										beforeSend: function() {
+											$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+										},
+										complete: function() {
+											$('.wait').remove();
+										},			
+										success: function(json) {
+											if (json['postcode_required'] == '1') {
+												$('#postcode-required').show();
+											} else {
+												$('#postcode-required').hide();
+											}
+	
+											var html = '<option value=""><?php echo $text_select; ?></option>';
+	
+											if (json['zone'] != '') {
+												for (i = 0; i < json['zone'].length; i++) {
+													html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+													
+													if (json['zone'][i]['zone_id'] == zone_id) {
+														html += ' selected="selected"';
+													}
+									
+													html += '>' + json['zone'][i]['name'] + '</option>';
+												}
+											} else {
+												html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+											}
+	
+											$('select[name=\'zone_id\']').html(html);
+										}
+									});
+								});
+							}
+						});
+					});
+				});	
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/affiliate/edit.tpl">
+		<operation>
+			<search position="after" index="1"><![CDATA[<?php echo $header; ?>]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+		
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"]').find('option[value="30"]').attr('selected', true);
+								$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+									$.ajax({
+										url: 'index.php?route=account/register/country&country_id=30',
+										dataType: 'json',
+										beforeSend: function() {
+											$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+										},
+										complete: function() {
+											$('.wait').remove();
+										},			
+										success: function(json) {
+											if (json['postcode_required'] == '1') {
+												$('#postcode-required').show();
+											} else {
+												$('#postcode-required').hide();
+											}
+	
+											var html = '<option value=""><?php echo $text_select; ?></option>';
+	
+											if (json['zone'] != '') {
+												for (i = 0; i < json['zone'].length; i++) {
+													html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+													
+													if (json['zone'][i]['zone_id'] == zone_id) {
+														html += ' selected="selected"';
+													}
+									
+													html += '>' + json['zone'][i]['name'] + '</option>';
+												}
+											} else {
+												html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+											}
+	
+											$('select[name=\'zone_id\']').html(html);
+										}
+									});
+								});
+							}
+						});
+					});
+				});	
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/checkout/register.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"]').find('option[value="30"]').attr('selected', true);
+								$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+									$.ajax({
+										url: 'index.php?route=account/register/country&country_id=30',
+										dataType: 'json',
+										beforeSend: function() {
+											$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+										},
+										complete: function() {
+											$('.wait').remove();
+										},			
+										success: function(json) {
+											if (json['postcode_required'] == '1') {
+												$('#postcode-required').show();
+											} else {
+												$('#postcode-required').hide();
+											}
+	
+											var html = '<option value=""><?php echo $text_select; ?></option>';
+	
+											if (json['zone'] != '') {
+												for (i = 0; i < json['zone'].length; i++) {
+													html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+													
+													if (json['zone'][i]['zone_id'] == zone_id) {
+														html += ' selected="selected"';
+													}
+									
+													html += '>' + json['zone'][i]['name'] + '</option>';
+												}
+											} else {
+												html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+											}
+	
+											$('select[name=\'zone_id\']').html(html);
+										}
+									});
+								});
+							}
+						});
+					});
+				});
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/checkout/guest.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"] option[value="30"]').attr('selected', true);
+								$('select[name="zone_id"]').load('index.php?route=account/register/country&country_id=30', function(){
+									$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+										$.ajax({
+											url: 'index.php?route=account/register/country&country_id=30',
+											dataType: 'json',
+											beforeSend: function() {
+												$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+											},
+											complete: function() {
+												$('.wait').remove();
+											},			
+											success: function(json) {
+												if (json['postcode_required'] == '1') {
+													$('#postcode-required').show();
+												} else {
+													$('#postcode-required').hide();
+												}
+		
+												var html = '<option value=""><?php echo $text_select; ?></option>';
+		
+												if (json['zone'] != '') {
+													for (i = 0; i < json['zone'].length; i++) {
+														html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+														
+														if (json['zone'][i]['zone_id'] == zone_id) {
+															html += ' selected="selected"';
+														}
+										
+														html += '>' + json['zone'][i]['name'] + '</option>';
+													}
+												} else {
+													html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+												}
+		
+												$('select[name=\'zone_id\']').html(html);
+											}
+										});
+									});
+								});
+							}
+						});
+					});
+				});
+				</script>
+			]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/view/theme/*/template/checkout/guest_shipping.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('input[name="postcode"]').val().replace('-', ''));
+
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('select[name="country_id"] option[value="30"]').attr('selected', true);
+								$('select[name="zone_id"]').load('index.php?route=account/register/country&country_id=30', function(){
+									$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+										$.ajax({
+											url: 'index.php?route=account/register/country&country_id=30',
+											dataType: 'json',
+											beforeSend: function() {
+												$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+											},
+											complete: function() {
+												$('.wait').remove();
+											},			
+											success: function(json) {
+												if (json['postcode_required'] == '1') {
+													$('#postcode-required').show();
+												} else {
+													$('#postcode-required').hide();
+												}
+		
+												var html = '<option value=""><?php echo $text_select; ?></option>';
+		
+												if (json['zone'] != '') {
+													for (i = 0; i < json['zone'].length; i++) {
+														html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+														
+														if (json['zone'][i]['zone_id'] == zone_id) {
+															html += ' selected="selected"';
+														}
+										
+														html += '>' + json['zone'][i]['name'] + '</option>';
+													}
+												} else {
+													html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+												}
+		
+												$('select[name=\'zone_id\']').html(html);
+											}
+										});
+									});
+								});
+							}
+						});
+					});
+				});
+				</script>
+			]]></add>
+		</operation>
+	</file>
+
+	<file name="catalog/view/theme/*/template/checkout/payment_address.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('div#payment-new').find('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('div#payment-new').find('input[name="postcode"]').val().replace('-', ''));
+
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('div#payment-new').find('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('div#payment-new').find('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('div#payment-new').find('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('div#payment-new').find('select[name="country_id"] option[value="30"]').attr('selected', true);
+								$('div#payment-new').find('select[name="zone_id"]').load('index.php?route=account/register/country&country_id=30', function(){
+									$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+										$.ajax({
+											url: 'index.php?route=account/register/country&country_id=30',
+											dataType: 'json',
+											beforeSend: function() {
+												$('div#payment-new').find('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+											},
+											complete: function() {
+												$('.wait').remove();
+											},			
+											success: function(json) {
+												if (json['postcode_required'] == '1') {
+													$('div#payment-new').find('#postcode-required').show();
+												} else {
+													$('div#payment-new').find('#postcode-required').hide();
+												}
+		
+												var html = '<option value=""><?php echo $text_select; ?></option>';
+		
+												if (json['zone'] != '') {
+													for (i = 0; i < json['zone'].length; i++) {
+														html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+														
+														if (json['zone'][i]['zone_id'] == zone_id) {
+															html += ' selected="selected"';
+														}
+										
+														html += '>' + json['zone'][i]['name'] + '</option>';
+													}
+												} else {
+													html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+												}
+		
+												$('div#payment-new').find('select[name=\'zone_id\']').html(html);
+											}
+										});
+									});
+								});
+							}
+						});
+					});
+				});
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+
+	<file name="catalog/view/theme/*/template/checkout/shipping_address.tpl">
+		<operation>
+			<search position="top"><![CDATA[]]></search>
+			<add><![CDATA[
+				<script type="text/javascript">
+				$(function(){
+					$('div#shipping-new').find('input[name="postcode"]').blur(function(){
+						var cep = $.trim($('div#shipping-new').find('input[name="postcode"]').val().replace('-', ''));
+
+						$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+cep, function(){
+							if(resultadoCEP["resultado"] == "1"){
+								$('div#shipping-new').find('input[name="address_1"]').val(unescape(resultadoCEP["tipo_logradouro"])+" "+unescape(resultadoCEP["logradouro"]));
+								$('div#shipping-new').find('input[name="address_2"]').val(unescape(resultadoCEP["bairro"]));
+								$('div#shipping-new').find('input[name="city"]').val(unescape(resultadoCEP["cidade"]));
+
+								$('div#shipping-new').find('select[name="country_id"] option[value="30"]').attr('selected', true);
+								$('div#shipping-new').find('select[name="zone_id"]').load('index.php?route=account/register/country&country_id=30', function(){
+									$.post('index.php?route=account/register/estado_autocompletar&estado=' + unescape(resultadoCEP['uf']), function(zone_id){
+										$.ajax({
+											url: 'index.php?route=account/register/country&country_id=30',
+											dataType: 'json',
+											beforeSend: function() {
+												$('div#shipping-new').find('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/graveagudo2012/image/loading.gif" alt="" /></span>');
+											},
+											complete: function() {
+												$('.wait').remove();
+											},			
+											success: function(json) {
+												if (json['postcode_required'] == '1') {
+													$('div#shipping-new').find('#postcode-required').show();
+												} else {
+													$('div#shipping-new').find('#postcode-required').hide();
+												}
+		
+												var html = '<option value=""><?php echo $text_select; ?></option>';
+		
+												if (json['zone'] != '') {
+													for (i = 0; i < json['zone'].length; i++) {
+														html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+														
+														if (json['zone'][i]['zone_id'] == zone_id) {
+															html += ' selected="selected"';
+														}
+										
+														html += '>' + json['zone'][i]['name'] + '</option>';
+													}
+												} else {
+													html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+												}
+		
+												$('div#shipping-new').find('select[name=\'zone_id\']').html(html);
+											}
+										});
+									});
+								});
+							}
+						});
+					});
+				});
+				</script>
+			]]></add>
+		</operation>    
+	</file>
+</modification>
