@@ -1,0 +1,711 @@
+<modification>
+	<id>Mercadolivre API Opencart Module</id>
+	<version>2.1</version>
+	<vqmver>1.0.8</vqmver>
+	<author>Samir Das</author> 
+        
+	<file name="admin/controller/common/header.php">
+		<operation error="log">
+			<search position="after"><![CDATA[$this->data['text_feed']]]></search>
+			<add><![CDATA[
+			    $this->data['text_mercadolivre_extension']       = $this->language->get('text_mercadolivre_extension');
+				$this->data['text_mercadolivre_dashboard']       = $this->language->get('text_mercadolivre_dashboard');
+				$this->data['text_mercadolivre_setting']       = $this->language->get('text_mercadolivre_setting');
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[$this->data['feed']]]></search>
+			<add><![CDATA[
+			    $this->data['mercadolivre_link_extension']           = $this->url->link('module/mercadolivre', 'token=' . $this->session->data['token'], 'SSL');
+			    $this->data['mercadolivre_link_setting']              = $this->url->link('module/mercadolivre/setting', 'token=' . $this->session->data['token'], 'SSL');
+
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[ $this->template = 'common/header.tpl' ]]></search>
+			<add><![CDATA[
+			        $this->mercadolivre->getAccess();
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/language/*/common/header.php">
+		<operation error="log">
+			<search position="after"><![CDATA[<?php]]></search>
+			<add><![CDATA[
+			    $_['text_mercadolivre_extension']    = 'Mercadolivre';
+			    $_['text_mercadolivre_dashboard']    = 'Dashboard';
+				$_['text_mercadolivre_setting']    = 'Setting';
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/common/header.tpl">
+		<operation error="log">
+			<search position="after"><![CDATA[<?php echo $text_feed; ?>]]></search>
+			<add><![CDATA[
+			<li><a class="parent"><?php echo $text_mercadolivre_extension; ?></a>
+                <ul>
+                    <li><a href="<?php echo $mercadolivre_link_extension; ?>"><?php echo $text_mercadolivre_dashboard; ?></a></li>
+                    <li><a href="<?php echo $mercadolivre_link_setting; ?>"><?php echo $text_mercadolivre_setting; ?></a></li>
+                </ul>
+            </li>
+            ]]></add>
+		</operation>
+	</file>  
+	  <file name="admin/controller/catalog/product.php">
+	    <operation>
+            <search position="after"><![CDATA[ 'filter_status'   => $filter_status, ]]></search>     
+			  <add><![CDATA[
+                'filter_ml'   => $filter_ml,
+            ]]></add>
+        </operation> 
+		<operation>
+            <search position="after"><![CDATA[ $url = ''; ]]></search>     
+			  <add><![CDATA[
+			     if (isset($this->request->get['filter_ml'])) {
+						$filter_ml = $this->request->get['filter_ml'];
+					} else {
+						$filter_ml = null;
+					}
+                if (isset($this->request->get['filter_ml'])) {
+			        $url .= '&filter_ml=' . $this->request->get['filter_ml'];
+		         }
+				 $this->data['filter_ml'] = $filter_ml;
+            ]]></add>
+        </operation> 
+	    <operation>
+            <search position="before" index="1"><![CDATA[ $this->getList(); ]]></search>     
+			  <add><![CDATA[
+                $this->mercadolivre->processAPIOrder();
+				
+            ]]></add>
+        </operation> 
+        <operation>
+            <search position="after"><![CDATA[$this->model_catalog_product->editProduct(]]></search>
+            <add><![CDATA[ $this->load->model('mercadolivre/mercadolivre');
+			               $this->model_mercadolivre_mercadolivre->synchronizeProduct($this->request->get['product_id'],true);
+						  ]]></add>
+        </operation>
+
+        <operation>
+            <search position="after"><![CDATA[$this->data['products'][] = array(]]></search>
+            <add><![CDATA[
+                'syn_url' => $syn_url,
+				'unbind_url'=>$unbind_url,
+				'listing_status' => $this->mercadolivre->getMercadolivreStatus($result['product_id']),
+				'listing_item_status' => $this->mercadolivre->getMercadolivreData($result['product_id'],'status'),
+            ]]></add>
+        </operation>
+         <operation>
+            <search position="before"><![CDATA[ $pagination = new Pagination(); ]]></search>
+            <add><![CDATA[
+			
+                     if (isset($this->session->data['error_warning'])) {
+						$this->data['error_warning'] = $this->session->data['error_warning'];
+					
+						unset($this->session->data['error_warning']);
+					} else {
+						$this->data['error_warning'] = '';
+					}
+					
+            ]]></add>
+        </operation>   
+        <operation>
+            <search position="before" index="1"><![CDATA[ $results = $this->model_catalog_product->getProducts($data); ]]></search>
+            <add><![CDATA[
+              
+
+                $this->load->language('module/mercadolivre-extra');
+				
+				if(!$this->mercadolivre->getAccess())
+				{
+				  $this->data['error_warning'] = $this->language->get('need_auth');
+				}
+
+				  $this->data['lang_markets'] = $this->language->get('lang_markets');
+                  $this->data['lang_syn'] = $this->language->get('lang_syn');
+				  $this->data['lang_desyn'] = $this->language->get('lang_desyn');
+				  $this->data['lang_bulk_btn'] = $this->language->get('lang_bulk_btn');
+				  $this->data['lang_bulk_desyn_btn'] = $this->language->get('lang_bulk_desyn_btn');
+				  $this->data['mercadolivre_product_yes'] = $this->language->get('mercadolivre_product_yes');
+				  $this->data['mercadolivre_product_no'] = $this->language->get('mercadolivre_product_no');
+				  $this->data['lang_bulk_ml_product'] = $this->language->get('lang_bulk_ml_product');
+				
+				  $this->document->addScript('../catalog/view/javascript/jquery/colorbox/jquery.colorbox-min.js');
+			      $this->document->addStyle('../catalog/view/javascript/jquery/colorbox/colorbox.css');
+				
+            ]]></add>
+        </operation>  
+        <operation>
+            <search position="before"><![CDATA[ $this->data['products'][] = array( ]]></search>
+            <add><![CDATA[
+              	
+				$syn_url=$this->url->link('module/mercadolivre/synchronize', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL');
+				$is_listed=$this->mercadolivre->getMercadolivreIDs($result['product_id']);
+				if(count($is_listed)>0)
+				$unbind_url=$this->url->link('module/mercadolivre/desynchronize', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, 'SSL');
+				else
+				$unbind_url='';
+				
+            ]]></add>
+        </operation>
+	
+		<operation>
+            <search position="before"><![CDATA[ $this->load->model('localisation/weight_class'); ]]></search>
+            <add><![CDATA[
+			     
+				 $this->load->model('mercadolivre/mercadolivre');
+                $this->load->language('module/mercadolivre-extra');
+                $this->data['entry_mercadolivre_category'] = $this->language->get('entry_mercadolivre_category');
+				  $this->data['entry_mercadolivre_currency'] = $this->language->get('entry_mercadolivre_currency');
+				  $this->data['entry_mercadolivre_buying_mode'] = $this->language->get('entry_mercadolivre_buying_mode');
+				  $this->data['entry_mercadolivre_listing_type'] = $this->language->get('entry_mercadolivre_listing_type');
+				  $this->data['entry_mercadolivre_condition'] = $this->language->get('entry_mercadolivre_condition');
+				  $this->data['tab_mercadolivre'] = $this->language->get('tab_mercadolivre');
+				  $this->data['ml_text_category_hint'] = $this->language->get('ml_text_category_hint');
+				  $this->data['ml_text_select'] = $this->language->get('ml_text_select');
+				  $this->data['entry_mercadolivre_warranty'] = $this->language->get('entry_mercadolivre_warranty');
+				  $this->data['entry_mercadolivre_subtitle'] = $this->language->get('entry_mercadolivre_subtitle');
+				  $this->data['entry_mercadolivre_video'] = $this->language->get('entry_mercadolivre_video');
+				
+				
+				
+				
+				if (isset($this->request->post['mercaId'])) {
+					$this->data['mercaId'] = $this->request->post['mercaId'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaId'] = $product_info['mercaId'];
+				} else {
+					$this->data['mercaId'] = '';
+				}
+				
+				if (isset($this->request->post['mercaTree'])) {
+					$this->data['mercaTree'] = $this->request->post['mercaTree'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaTree'] = $product_info['mercaTree'];
+				} else {
+					$this->data['mercaTree'] = '';
+				}
+				
+				if (isset($this->request->post['mercaCurrency'])) {
+					$this->data['mercaCurrency'] = $this->request->post['mercaCurrency'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaCurrency'] = $product_info['mercaCurrency'];
+				} else {
+					$this->data['mercaCurrency'] = '';
+				}
+				
+				if (isset($this->request->post['mercaBuyMode'])) {
+					$this->data['mercaBuyMode'] = $this->request->post['mercaBuyMode'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaBuyMode'] = $product_info['mercaBuyMode'];
+				} else {
+					$this->data['mercaBuyMode'] = '';
+				}
+				
+				if (isset($this->request->post['mercaListType'])) {
+					$this->data['mercaListType'] = $this->request->post['mercaListType'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaListType'] = $product_info['mercaListType'];
+				} else {
+					$this->data['mercaListType'] = '';
+				}
+				
+				if (isset($this->request->post['mercaCondition'])) {
+					$this->data['mercaCondition'] = $this->request->post['mercaCondition'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaCondition'] = $product_info['mercaCondition'];
+				} else {
+					$this->data['mercaCondition'] = '';
+				}
+				
+				if (isset($this->request->post['mercaWarranty'])) {
+					$this->data['mercaWarranty'] = $this->request->post['mercaWarranty'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaWarranty'] = $product_info['mercaWarranty'];
+				} else {
+					$this->data['mercaWarranty'] = '';
+				}
+				
+				if(!$this->data['mercaWarranty'])$this->data['mercaWarranty']=$this->config->get('mercadolivre_mercaWarranty');
+				
+				
+				if (isset($this->request->post['mercaVideoId'])) {
+					$this->data['mercaVideoId'] = $this->request->post['mercaVideoId'];
+				} elseif (!empty($product_info)) {
+					$this->data['mercaVideoId'] = $product_info['mercaVideoId'];
+				} else {
+					$this->data['mercaVideoId'] = '';
+				}
+				
+				
+				$this->data['mercadolivre_cats']=$this->model_mercadolivre_mercadolivre->getMercadoCategoryOption($this->data['mercaId']);
+				$this->data['mercadolivre_currency']=$this->model_mercadolivre_mercadolivre->getMercadoCurrency();
+				$this->data['mercadolivre_modes']=$this->model_mercadolivre_mercadolivre->getMercadoMode();
+				$this->data['mercadolivre_types']=$this->model_mercadolivre_mercadolivre->getMercadoType();
+				$this->data['mercadolivre_conditions']=$this->model_mercadolivre_mercadolivre->getMercadoCondition();
+				
+            ]]></add>
+        </operation>
+    </file>
+	<file name="admin/model/catalog/product.php">
+        <operation>
+            <search position="after"><![CDATA[ $product_id = $this->db->getLastId();]]></search>
+            <add><![CDATA[ if (isset($data['mercaId'])) {
+			
+            if (!isset($data['ml_attr']))$data['ml_attr']=array();
+			 $this->mercadolivre->addMLProductAttribute($data['ml_attr'],$product_id);
+			 $this->mercadolivre->updateProductMLData($data,$product_id);
+			
+		} ]]></add>
+        </operation>
+		 <operation>
+            <search position="after"><![CDATA[ $this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");]]></search>
+            <add><![CDATA[ if (isset($data['mercaId'])) {
+            
+			 if (!isset($data['ml_attr']))$data['ml_attr']=array();
+			 $this->mercadolivre->addMLProductAttribute($data['ml_attr'],$product_id);
+			 $this->mercadolivre->updateProductMLData($data,$product_id);
+		} ]]></add>
+        </operation>
+		<operation>
+            <search position="before"><![CDATA[ if (isset($data['filter_status']) && !is_null($data['filter_status'])) ]]></search>     
+			  <add><![CDATA[
+                if (isset($data['filter_ml']) && !is_null($data['filter_ml']) && $data['filter_ml']==1) {
+			        $sql .= " AND p.product_id in (select product_id from " . DB_PREFIX . "mercadolivre_product)";
+		        }
+				if (isset($data['filter_ml']) && !is_null($data['filter_ml']) && $data['filter_ml']==0) {
+			        $sql .= " AND p.product_id not in (select product_id from " . DB_PREFIX . "mercadolivre_product)";
+		        }
+            ]]></add>
+        </operation> 
+     </file>
+	 <file name="admin/view/template/catalog/product_list.tpl">
+            <operation>
+                <search position="before"><![CDATA[<td class="right"><?php echo $column_action; ?></td>]]></search>
+                <add><![CDATA[
+                    <td width="200"><?php echo $lang_markets; ?></td>
+                ]]></add>
+            </operation>
+            <operation error="log">
+                <search position="replace"><![CDATA[<td class="center" colspan="8"><?php echo $text_no_results; ?></td>]]></search>
+                <add><![CDATA[ <td class="center" colspan="9"><?php echo $text_no_results; ?></td> ]]></add>
+            </operation>
+			<operation>
+                <search position="before"><![CDATA[ var filter_status = $('select[name=\'filter_status\']').attr('value'); ]]></search>
+                <add><![CDATA[ 
+				   var filter_ml = $('select[name=\'filter_ml\']').attr('value');
+	
+						if (filter_ml != '*') {
+							url += '&filter_ml=' + encodeURIComponent(filter_ml);
+						}
+				 ]]></add>
+            </operation>
+            <operation>
+                <search position="before"><![CDATA[<td align="right"><a onclick="filter();" class="button"]]></search>
+                <add><![CDATA[ <td>
+				    <select name="filter_ml">
+					  <option value="*"></option>
+					  <?php if ($filter_ml) { ?>
+					  <option value="1" selected="selected"><?php echo $mercadolivre_product_yes; ?></option>
+					  <?php } else { ?>
+					  <option value="1"><?php echo $mercadolivre_product_yes; ?></option>
+					  <?php } ?>
+					  <?php if (!is_null($filter_ml) && !$filter_ml) { ?>
+					  <option value="0" selected="selected"><?php echo $mercadolivre_product_no; ?></option>
+					  <?php } else { ?>
+					  <option value="0"><?php echo $mercadolivre_product_no; ?></option>
+					  <?php } ?>
+                  </select>
+				  </td> ]]></add>
+            </operation>
+            <operation>
+                <search position="before"><![CDATA[<td class="right"><?php foreach ($product['action'] as $action) { ?>]]></search>
+                <add><![CDATA[
+                    <td>
+                        <a href="<?php echo $product['syn_url']; ?>"><img align="top" src="view/image/mercadolivre/syn-icon.png" />&nbsp;<?php echo $lang_syn; ?></a><br /> <?php echo $product['listing_status'];?> <?php if(!empty($product['listing_item_status'])) echo '<br />'.$product['listing_item_status'];?> <?php if(!empty($product['unbind_url'])) echo '<br /><a href="'.$product['unbind_url'].'">'.$lang_desyn.'</a>'; ?>
+                    </td> 
+                ]]></add>
+            </operation>
+			
+			<operation>
+               <search position="before"><![CDATA[<?php echo $footer; ?>]]></search>
+			   <add><![CDATA[
+					<script type="text/javascript">
+						
+							$('.buttons').prepend('<a onclick="bulkSynchronize();" class="button"><span><?php echo $lang_bulk_btn; ?></span></a><a onclick="bulkDeSynchronize();" class="button"><span><?php echo $lang_bulk_desyn_btn; ?><a onclick="bulkMLSetting();" class="button"><span><?php echo $lang_bulk_ml_product; ?></span></a>');
+	
+							function bulkSynchronize(){
+								$('#form').attr('action', 'index.php?route=module/mercadolivre/bulkSynchronize&token=<?php echo $this->request->get['token']; ?>');  			
+								$('#form').submit();
+							}
+							
+							function bulkDeSynchronize(){
+								$('#form').attr('action', 'index.php?route=module/mercadolivre/bulkDesynchronize&token=<?php echo $this->request->get['token']; ?>');  			
+								$('#form').submit();
+							}
+							
+							function bulkMLSetting(){
+							
+								var selected_products=$('input[name="selected[]"]:checked').map(function() {return this.value;}).get().join(',');
+								$.colorbox({href:"index.php?route=module/mercadolivre/bulk_setting&token=<?php echo $this->request->get['token']; ?>&pids="+selected_products});		
+								
+							}
+							
+							
+					</script>
+						]]></add>
+             </operation>
+        </file>
+		
+		<file name="admin/view/template/catalog/product_form.tpl">
+		  <operation>
+                <search position="replace"><![CDATA[<a href="#tab-design"><?php echo $tab_design; ?></a>]]></search>
+                <add><![CDATA[
+				 <a href="#tab-design"><?php echo $tab_design; ?></a><a href="#tab-mercadolivre"><?php echo $tab_mercadolivre; ?></a>
+                   ]]></add>
+            </operation>
+			 <operation>
+                <search position="before"><![CDATA[<div id="tab-general">]]></search>
+                <add><![CDATA[
+                   <div id="tab-mercadolivre">
+				      <table class="form">
+						 <tr>
+							 <td><?php echo $entry_mercadolivre_category; ?><br /><?php echo $ml_text_category_hint;?></td>
+							  <td>
+								<input type="hidden" name="mercaTree" value="<?php echo $mercaTree?>" id="mercaTree" />
+							    <input type="hidden" name="mercaId" value="<?php echo $mercaId?>" id="mercaId" />
+							   <span id="category_tree_span" class="category_ok">
+							     <?php echo html_entity_decode($mercaTree)?>
+							   </span>
+								<select name="mercadolivre_cat_selection[]" class="mercadolivre_cat_selection">
+								   <option value=""><?php echo $ml_text_select;?></option>
+									<?php echo $mercadolivre_cats?>
+								</select>
+							  </td>
+						  </tr>
+						   <tr id="ml_attr_row_wrapper" style="display:none">
+							 <td colspan="2"></td>
+						  </tr> 
+						 <tr>
+							 <td><?php echo $entry_mercadolivre_currency; ?></td>
+							  <td>
+								<select name="mercaCurrency" id="mercaCurrency">
+								<option value=""><?php echo $ml_text_select;?></option>
+									<?php foreach ($mercadolivre_currency as $mercadolivre_cur) { $chk=''; if($mercaCurrency==$mercadolivre_cur['value']) $chk='selected'; ?>
+									  <option value="<?php echo $mercadolivre_cur['value']?>" <?php echo $chk; ?> ><?php echo $mercadolivre_cur['name']?></option>
+									<?php } ?>
+								</select>
+							  </td>
+						  </tr>
+						  <tr>
+							 <td><?php echo $entry_mercadolivre_buying_mode; ?></td>
+							  <td>
+								<select name="mercaBuyMode" id="mercaBuyMode">
+								<option value=""><?php echo $ml_text_select;?></option>
+									<?php foreach ($mercadolivre_modes as $mercadolivre_mode) { $chk=''; if($mercaBuyMode==$mercadolivre_mode['value']) $chk='selected'; ?>
+									  <option value="<?php echo $mercadolivre_mode['value']?>" <?php echo $chk; ?> ><?php echo $mercadolivre_mode['name']?></option>
+									<?php } ?>
+								</select>
+							  </td>
+						  </tr>
+						  <tr>
+							 <td><?php echo $entry_mercadolivre_listing_type; ?></td>
+							  <td>
+								<select name="mercaListType" id="mercaListType">
+								<option value=""><?php echo $ml_text_select;?></option>
+									<?php foreach ($mercadolivre_types as $mercadolivre_type) { $chk=''; if($mercaListType==$mercadolivre_type['value']) $chk='selected'; ?>
+									  <option value="<?php echo $mercadolivre_type['value']?>" <?php echo $chk; ?> ><?php echo $mercadolivre_type['name']?></option>
+									<?php } ?>
+								</select>
+							  </td>
+						  </tr>
+						  <tr>
+							 <td><?php echo $entry_mercadolivre_condition; ?></td>
+							  <td>
+								<select name="mercaCondition" id="mercaCondition">
+								<option value=""><?php echo $ml_text_select;?></option>
+									<?php foreach ($mercadolivre_conditions as $mercadolivre_condition) { $chk=''; if($mercaCondition==$mercadolivre_condition['value']) $chk='selected'; ?>
+									  <option value="<?php echo $mercadolivre_condition['value']?>" <?php echo $chk; ?> ><?php echo $mercadolivre_condition['name']?></option>
+									<?php } ?>
+								</select>
+							  </td>
+						  </tr>
+						  <tr>
+							 <td><?php echo $entry_mercadolivre_warranty; ?></td>
+							  <td>
+								 <input type="text" name="mercaWarranty" value="<?php echo $mercaWarranty; ?>" size="30" />
+							  </td>
+						  </tr>
+						  <tr>
+							 <td><?php echo $entry_mercadolivre_video; ?></td>
+							  <td>
+								 <input type="text" name="mercaVideoId" value="<?php echo $mercaVideoId; ?>" size="30" />
+							  </td>
+						  </tr>
+					  </table>	
+				   </div>
+                ]]></add>
+            </operation>
+			<operation>
+                <search position="before"><![CDATA[<?php echo $footer; ?>]]></search>
+                <add><![CDATA[
+                  <style type="text/css">
+						#category_tree_span{
+							display: block;
+							font-weight: bold;
+							margin-bottom: 8px;
+						}
+						.category_ok{color:green;}
+						.category_nok{color:red;}
+						</style>
+						<script type="text/javascript"><!--
+						var ml_attr_row='';
+						$('.mercadolivre_cat_selection').live('change',function(){
+						
+							var $this=$(this);
+							if($this.val()=='') return false;
+							
+							$('#mercaId').val($this.val());
+							
+							$.ajax({
+									url: 'index.php?route=module/mercadolivre/category&token=<?php echo $token; ?>',
+									dataType: 'json',
+									data:{catId:$this.val(),listingType:$('#mercaListType').val()},
+									beforeSend:function()
+									{
+									  $('body').css('cursor','wait');
+									},
+									success: function(result) {
+									  $('body').css('cursor','default');
+									  $this.nextAll("select.mercadolivre_cat_selection").remove();
+									  if(result.categories.length>0)
+									  {
+										var html='&nbsp;<select name="mercadolivre_cat_selection[]" class="mercadolivre_cat_selection"><option value="">-Select-</option>';
+										for(i=0;i<result.categories.length;i++)
+										{
+										   html+='<option value="'+result.categories[i].id+'">'+result.categories[i].name+'</option>';   
+										}
+										html+='</select>';
+										$this.after(html);
+									  }
+									  getCategoryTree();
+									  
+									  if(result.listing_type!=''){
+									    $('#mercaListType').html(result.listing_type);
+									  }
+									  
+									  if(result.allowed=='1'){
+									    $('#category_tree_span').removeClass('category_nok');
+									    $('#category_tree_span').addClass('category_ok');
+									  }else{
+									    $('#category_tree_span').removeClass('category_ok');
+									    $('#category_tree_span').addClass('category_nok');
+									  }
+									  
+									  
+									  
+									  if(result.attribute_types=='1'){
+									    getCatAttr($this.val());
+									  }else{
+									     $('#ml_attr_row_wrapper td').html('');
+			  						     $('#ml_attr_row_wrapper').hide(); 
+			  						   
+									  }
+									}
+								});
+							
+						});
+						
+						function getCategoryTree()
+						{
+						   var tree='';
+						   $('select.mercadolivre_cat_selection option:selected').each(function(){
+							  if($(this).val()!=''){
+								  if(tree=='')tree+=$(this).text();
+								  else tree+=' &raquo; '+$(this).text();
+							  }
+						   });
+						   
+						   $('#mercaTree').val(tree); 
+						   $('#category_tree_span').html(tree); 
+						}
+						
+						function getCatAttr(catId)
+							{
+							     var product_id = '<?php echo isset($this->request->get['product_id'])?$this->request->get['product_id']:0; ?>';
+   								 $.ajax({
+								 url: 'index.php?route=module/mercadolivre/attribute&token=<?php echo $token; ?>',
+								 dataType: 'json',
+								 data:{catId:catId,product_id:product_id},
+								 beforeSend:function()
+									{
+			  							$('body').css('cursor','wait');
+									},
+								success: function(result) {
+			  						$('body').css('cursor','default');
+			  						ml_attr_row=result.row;
+			  						$('#ml_attr_row_wrapper td').html(result.html);
+			  						if(result.html==''){ 
+			  						  $('#ml_attr_row_wrapper').hide(); 
+			  						}
+			  						else {
+									 $('#ml_attr_row_wrapper').show(); 
+								   }
+							}
+						  });
+					    }
+					    
+					    if($('#mercaId').length>0){
+					      if($('#mercaId').val()!='') getCatAttr($('#mercaId').val());
+					    }
+					    
+					    function addMLAttribute(){
+					       var no_of_ml_attr=$('tr.ml_attr_row').length;
+		                   no_of_ml_attr=parseInt(no_of_ml_attr)+1;
+		                   
+		                   while($('#ml_attr_row'+no_of_ml_attr).length!=0)
+		                    {
+		                      no_of_ml_attr++; 
+		                    }
+		                    ml_attr_row_html=ml_attr_row;
+		                    ml_attr_row_html=ml_attr_row_html.replace(/__AINDEX__/g, no_of_ml_attr);
+		                    $('#ml_attribute tbody').append(ml_attr_row_html);
+					    }
+					    
+					    function removeMLAttribute(id){
+					      $('#ml_attr_row'+id).remove();
+					    }
+						
+						//--></script>
+                ]]></add>
+            </operation>
+        </file>
+	<file name="catalog/model/checkout/order.php">
+        <operation>
+            <search position="before" index="1"><![CDATA[$this->cache->delete('product');]]></search>
+            <add><![CDATA[
+            $this->mercadolivre->orderNew((int)$order_id);
+            ]]></add>
+        </operation>
+    </file>
+	
+	 <file name="admin/controller/sale/order.php">
+       <operation>
+            <search position="before" index="1"><![CDATA[ $this->getList(); ]]></search>     
+			  <add><![CDATA[
+                $this->mercadolivre->processAPIOrder();
+				
+            ]]></add>
+        </operation> 
+		<operation>
+            <search position="before"><![CDATA[ $results = $this->model_sale_order->getOrders($data); ]]></search>     <add><![CDATA[
+                $this->load->language('module/mercadolivre-extra');
+                $this->data['mercadolivre_order'] = $this->language->get('mercadolivre_order');
+				
+            ]]></add>
+        </operation>
+		 <operation>
+            <search position="after"><![CDATA[ 'status'        => $result['status'], ]]></search>
+            <add><![CDATA[ 
+				'merca_order' => $this->mercadolivre->getMercadolivreOrderID($result['order_id']),
+            ]]></add>
+        </operation>
+		<operation>
+            <search position="after"><![CDATA[ $this->data['tab_fraud'] = $this->language->get('tab_fraud'); ]]></search>     <add><![CDATA[
+                $this->load->language('module/mercadolivre-extra');
+                $this->data['text_stop_sync'] = $this->language->get('text_stop_sync');
+				
+            ]]></add>
+        </operation>
+	</file>	
+	<file name="admin/view/template/sale/order_list.tpl">
+            <operation>
+                <search position="before"><![CDATA[<td class="right"><?php echo $column_action; ?></td>]]></search>
+                <add><![CDATA[
+                    <td width="120"  align="center"><?php echo $mercadolivre_order; ?></td>
+                ]]></add>
+            </operation>
+            <operation error="log">
+                <search position="replace"><![CDATA[<td class="center" colspan="8"><?php echo $text_no_results; ?></td>]]></search>
+                <add><![CDATA[ <td class="center" colspan="9"><?php echo $text_no_results; ?></td> ]]></add>
+            </operation>
+            <operation>
+                <search position="before"><![CDATA[<td align="right"><a onclick="filter();" class="button"]]></search>
+                <add><![CDATA[ <td></td> ]]></add>
+            </operation>
+            <operation>
+                <search position="before"><![CDATA[<td class="right"><?php foreach ($order['action'] as $action) { ?>]]></search>
+                <add><![CDATA[
+                    <td align="center">
+                        <?php echo $order['merca_order']; ?>
+                    </td>
+                ]]></add>
+            </operation>
+        </file>
+	<file name="admin/view/template/sale/order_info.tpl">                
+		<operation error="skip">
+			<search position="before" index="1"><![CDATA[ </table> ]]></search>		                        
+			 <add><![CDATA[
+		         <?php
+				    if($this->mercadolivre->getMercadolivreOrderID($_GET['order_id'])=='Yes'){
+					  $stopSync=$this->db->query("SELECT stopSync FROM `".DB_PREFIX."mercadolivre_order` WHERE `order_id` = '" . (int)$_GET['order_id'] . "'")->row['stopSync'];
+					  $checked=($stopSync)?'checked':'';
+					  echo '<tr>
+							  <td>'.$text_stop_sync.'</td>
+							  <td><input '.$checked.' onClick="changeMLSynStatus();" type="checkbox" id="stopSyncId" value="1" name="stopSync" /></td>
+						  </tr>';
+					  }	  
+					?> 
+			     
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="before"><![CDATA[ function orderStatusChange() ]]></search>		                        
+			 <add><![CDATA[
+		         function changeMLSynStatus(){
+					
+					if($('#stopSyncId').prop('checked')){
+					  var syncStatus = 1;
+					}else{
+					   var syncStatus = 0;
+					}
+		
+					$.ajax({
+						url: 'index.php?route=module/mercadolivre/updateSynStatus&token=<?php echo $this->request->get['token']; ?>&order_id=<?php echo $this->request->get['order_id']; ?>&stopSyncId='+syncStatus,
+						type: 'post',
+						dataType: 'html',
+						beforeSend: function(){},
+						success: function(html) {
+						},
+						failure: function(){},
+						error: function(){}
+					});
+				}
+				  
+			]]></add>
+		</operation>
+	</file>	
+	<file name="catalog/controller/common/seo_url.php">
+        <operation>
+                <search position="after"><![CDATA[ $url = explode('=', $query->row['query']); ]]></search>
+                <add><![CDATA[ if ($url[0] == 'mercadolivre') {
+						$this->request->get['mercadolivre'] = $url[1];
+					}]]>
+                </add> 
+        </operation>
+		<operation>
+                <search position="before"><![CDATA[ if (isset($this->request->get['route'])) { ]]></search>
+                <add><![CDATA[ elseif (isset($this->request->get['mercadolivre'])) {
+				$this->request->get['route'] = 'mercadolivre/'.$this->request->get['mercadolivre'];
+			} ]]>
+                </add> 
+        </operation>
+    </file>  
+    <file name="system/engine/controller.php">
+        <operation>
+                <search position="after"><![CDATA[$this->registry = $registry;]]></search>
+                <add><![CDATA[ $this->load->library('mercadolivre'); $registry->set('mercadolivre', new Mercadolivre($registry)); ]]>
+                </add> 
+        </operation>
+    </file>
+</modification>
