@@ -652,7 +652,8 @@ body div.shadow{display:none;}
 	}
 .cart-position #cart .heading span.link_a #cart-total {display:none;}
 .cart-position #cart .heading span.link_a #cart-total2 {
-	background-color:#ec008c;
+	background-color:#FFF;
+	color: #ec008c;
 	width:23px;
 	height:23px;
 	line-height:22px;

@@ -1,8 +1,8 @@
 <div id="cart" >
 
-  <div class="heading">
+  <div class="heading" style="background-image: url('/image/data/iconsacola.png'); background-repeat: no-repeat;">
 	<span class="link_a"> 
-		<i class="fa fa-shopping-cart"></i>
+		<i class="fa"></i>
 		<b><?php echo $heading_title; ?></b>
 		<span class="sc-button"></span>
 		<span id="cart-total2"><?php echo $text_items2; ?></span>
