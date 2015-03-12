@@ -74,7 +74,7 @@
 
 			<div class="col-sm-12" style="width: 49%; text-align: right;">
 				<div id="powered">
-					pagseguro_transp
+					<div style="margin-top: -5px;"><img src="/image/data/footer-bandeiras.png" height="30"></div>
 				</div>
 			</div>
 		</div>
