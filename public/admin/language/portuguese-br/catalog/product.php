@@ -105,4 +105,6 @@ $_['error_permission']		 = 'Atenção: Você não possui permissão para alterar
 $_['error_name']			 = 'O nome do produto deve ter de 3 a 255 caracteres!';
 $_['error_model']			 = 'O modelo do produto deve ter de 3 a 24 caracteres!';
 
+$_['tab_marketplace_links']			 = 'Mercados';
+
 ?>
