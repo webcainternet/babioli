@@ -1,0 +1,42 @@
+2015-03-12 6:26:36 - PHP Notice:  Error: Table 'babioli.oc_mercadolivre_api_call' doesn't exist<br />Error No: 1146<br />DELETE FROM `oc_mercadolivre_api_call` WHERE done =1 in /Users/fernandomendes/github/babioli/public/system/database/mysql.php on line 50
+2015-03-12 6:27:04 - MERCADOLIVRE Module --> Starting install
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_product table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_category table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_status table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_listing_type table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_order table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_attr_combination table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_attribute table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Created oc_mercadolivre_api_call table
+2015-03-12 6:27:05 - MERCADOLIVRE Module --> Completed install
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:46 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:37:52 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:02 - PHP Notice:  Undefined index: has_option in /Users/fernandomendes/github/babioli/public/vqmod/vqcache/vq2-catalog_model_catalog_product.php on line 31
+2015-03-23 20:38:28 - OPENSTOCK --> Starting install / repair
+2015-03-23 20:38:28 - OPENSTOCK --> Altered oc_product table
+2015-03-23 20:38:29 - OPENSTOCK --> Created oc_product_option_relation table
+2015-03-23 20:38:29 - OPENSTOCK --> Created oc_product_option_relation_group_price table
+2015-03-23 20:38:29 - OPENSTOCK --> Created oc_product_option_relation_discount_price table
+2015-03-23 20:38:29 - OPENSTOCK --> End install / repair
+2015-03-23 20:38:29 - OPENSTOCK --> Completed install
