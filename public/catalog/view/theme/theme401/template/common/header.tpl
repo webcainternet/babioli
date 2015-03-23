@@ -201,8 +201,8 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
 						<li><a class="<?php if (isset($this->request->get['route']) && $this->request->get['route']=="checkout/checkout") {echo "active";} ?>" href="<?php echo $checkout; ?>"><i class="fa fa-check"></i><?php echo $text_checkout; ?></a></li>
 						<?php if (!$logged) { ?>
 								<?php //echo $text_welcome; ?>
-								<li><a href="%s">Entrar</a></li>
-								<li><a href="%s">Criar uma conta</a></li>
+								<li><a href="/index.php?route=account/login">Entrar</a></li>
+								<li><a href="/index.php?route=account/register">Criar uma conta</a></li>
 								<?php } else { ?>
 								<?php echo $text_logged; ?>
 								<?php } ?>

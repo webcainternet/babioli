@@ -110,7 +110,7 @@
 		</div>
 		<?php } ?>
 		<div class="cart-button">
-			<div class="cart"><a onclick="addToCart('<?php echo $product['product_id']; ?>');" class="button" title="<?php echo $button_cart; ?>"><!--<i class="fa fa-shopping-cart"></i>--><span><?php echo $button_cart; ?></span></a></div>
+			<div class="cart"><a href="<?php echo $product['href']; ?>" class="button" title="Ver produto"><!--<i class="fa fa-shopping-cart"></i>--><span>Ver produto</span></a></div>
 			<div class="wishlist"><a class="tooltip-1 " title="<?php echo $button_wishlist; ?>"  onclick="addToWishList('<?php echo $product['product_id']; ?>');"><i class="fa fa-star"></i></a></div>
 			<div class="compare"><a class="tooltip-1" title="<?php echo $button_compare; ?>"  onclick="addToCompare('<?php echo $product['product_id']; ?>');"><i class="fa fa-bar-chart-o"></i></a></div>
 			<div class="clear"></div>
